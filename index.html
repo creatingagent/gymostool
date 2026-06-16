@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GymOS — Recover Lost Revenue. Automatically.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #080810;
+  --surface: #0e0e1a;
+  --surface2: #13131f;
+  --border: rgba(255,255,255,0.07);
+  --border-bright: rgba(255,255,255,0.13);
+  --blue: #3b82f6;
+  --blue-glow: rgba(59,130,246,0.35);
+  --cyan: #06b6d4;
+  --purple: #8b5cf6;
+  --white: #ffffff;
+  --gray: rgba(255,255,255,0.55);
+  --gray-dim: rgba(255,255,255,0.3);
+  --glass: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.08);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--black);
+  color: var(--white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── CURSOR GLOW ── */
+#cursor-glow {
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  transition: opacity 0.3s;
+}
+
+/* ── NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── ANIMATED BG BLOBS ── */
+.blob-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  animation: blobFloat linear infinite;
+}
+.blob-1 { width: 600px; height: 600px; background: var(--blue); top: -200px; left: -100px; animation-duration: 20s; }
+.blob-2 { width: 500px; height: 500px; background: var(--purple); bottom: -150px; right: -100px; animation-duration: 25s; animation-delay: -8s; }
+.blob-3 { width: 400px; height: 400px; background: var(--cyan); top: 40%; left: 50%; animation-duration: 18s; animation-delay: -4s; opacity: 0.08; }
+
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.05); }
+  66% { transform: translate(-20px, 40px) scale(0.95); }
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(8,8,16,0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--white) 0%, rgba(255,255,255,0.6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.nav-links { display: flex; gap: 32px; }
+.nav-links a {
+  color: var(--gray);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--white); }
+.nav-cta {
+  background: var(--blue);
+  color: var(--white);
+  padding: 10px 22px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 0 20px var(--blue-glow);
+}
+.nav-cta:hover { transform: translateY(-1px); box-shadow: 0 0 30px var(--blue-glow); }
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 140px 24px 80px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #93c5fd;
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeUp 0.6s ease forwards 0.2s;
+}
+.badge-dot {
+  width: 6px; height: 6px;
+  background: var(--cyan);
+  border-radius: 50%;
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+.hero h1 {
+  font-size: clamp(42px, 7vw, 88px);
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -3px;
+  max-width: 900px;
+  margin: 0 auto 24px;
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards 0.35s;
+}
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 50%, var(--purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--gray);
+  max-width: 560px;
+  margin: 0 auto 48px;
+  line-height: 1.6;
+  font-weight: 400;
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards 0.5s;
+}
+.hero-btns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards 0.65s;
+}
+.btn-primary {
+  background: var(--blue);
+  color: var(--white);
+  padding: 16px 36px;
+  border-radius: 100px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 0 40px var(--blue-glow);
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  border-radius: inherit;
+}
+.btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 60px var(--blue-glow); }
+.btn-secondary {
+  background: var(--glass);
+  color: var(--white);
+  padding: 16px 36px;
+  border-radius: 100px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  transition: all 0.25s;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+
+/* DASHBOARD MOCKUP */
+.hero-mockup {
+  margin-top: 80px;
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  opacity: 0;
+  animation: fadeUp 0.9s ease forwards 0.8s;
+}
+.mockup-glow {
+  position: absolute;
+  inset: -60px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(59,130,246,0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+.mockup-frame {
+  background: rgba(14,14,26,0.9);
+  border: 1px solid var(--border-bright);
+  border-radius: 20px;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+}
+.mockup-bar {
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mockup-dot { width: 12px; height: 12px; border-radius: 50%; }
+.mockup-dot:nth-child(1) { background: #ff5f56; }
+.mockup-dot:nth-child(2) { background: #ffbd2e; }
+.mockup-dot:nth-child(3) { background: #27c93f; }
+.mockup-url {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  color: var(--gray-dim);
+  font-weight: 500;
+}
+.mockup-body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  min-height: 380px;
+}
+.mockup-sidebar {
+  background: rgba(255,255,255,0.02);
+  border-right: 1px solid var(--border);
+  padding: 20px 16px;
+}
+.sidebar-logo {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--white);
+  padding: 0 8px;
+}
+.sidebar-item {
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: default;
+  transition: all 0.2s;
+}
+.sidebar-item.active { background: rgba(59,130,246,0.15); color: #93c5fd; }
+.sidebar-icon { font-size: 15px; }
+.mockup-main { padding: 24px; }
+.mockup-header { margin-bottom: 20px; }
+.mockup-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.mockup-sub { font-size: 12px; color: var(--gray); }
+.mockup-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.stat-label { font-size: 11px; color: var(--gray); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
+.stat-value.green { color: #34d399; }
+.stat-value.blue { color: #60a5fa; }
+.stat-value.white { color: var(--white); }
+.stat-change { font-size: 11px; color: #34d399; margin-top: 4px; }
+.mockup-table { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; overflow: hidden; }
+.table-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.table-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 12px; align-items: center; }
+.table-row:last-child { border-bottom: none; }
+.status-badge { display: inline-flex; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+.status-recovered { background: rgba(52,211,153,0.15); color: #34d399; }
+.status-pending { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.status-failed { background: rgba(239,68,68,0.15); color: #f87171; }
+.member-name { font-weight: 500; }
+.member-email { font-size: 11px; color: var(--gray); }
+
+/* ── SECTION BASE ── */
+section { position: relative; z-index: 2; }
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.section-sub {
+  font-size: 18px;
+  color: var(--gray);
+  line-height: 1.6;
+  max-width: 560px;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+/* ── METRICS ── */
+.metrics {
+  padding: 80px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+.metric-item {
+  text-align: center;
+  padding: 40px 24px;
+  border-right: 1px solid var(--border);
+}
+.metric-item:last-child { border-right: none; }
+.metric-number {
+  font-size: clamp(48px, 6vw, 72px);
+  font-weight: 900;
+  letter-spacing: -3px;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--white) 0%, rgba(255,255,255,0.6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.metric-label { font-size: 14px; color: var(--gray); font-weight: 500; }
+
+/* ── HOW IT WORKS ── */
+.how { padding: 120px 0; }
+.how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.how-steps { display: flex; flex-direction: column; gap: 0; }
+.step {
+  display: flex;
+  gap: 24px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border);
+  opacity: 0.4;
+  transition: opacity 0.3s;
+  cursor: default;
+}
+.step:first-child { padding-top: 0; }
+.step:last-child { border-bottom: none; }
+.step:hover { opacity: 1; }
+.step-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.step-desc { font-size: 14px; color: var(--gray); line-height: 1.6; }
+
+.flow-card {
+  background: var(--surface);
+  border: 1px solid var(--border-bright);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.flow-event {
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.flow-icon { font-size: 20px; }
+.flow-text { font-size: 13px; }
+.flow-text strong { display: block; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.flow-text span { color: var(--gray); }
+.flow-arrow {
+  text-align: center;
+  color: var(--gray-dim);
+  font-size: 20px;
+  margin: 8px 0;
+}
+.flow-message {
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.flow-whatsapp { color: #25d366; font-size: 22px; }
+.flow-bubble {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.5;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+}
+.flow-result {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+}
+.result-chip {
+  flex: 1;
+  background: rgba(52,211,153,0.08);
+  border: 1px solid rgba(52,211,153,0.2);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #34d399;
+}
+
+/* ── FEATURES ── */
+.features { padding: 120px 0; }
+.features-header { text-align: center; margin-bottom: 64px; }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.feature-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 32px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(59,130,246,0.05) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  border-radius: inherit;
+}
+.feature-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.feature-card:hover::before { opacity: 1; }
+.feature-emoji { font-size: 28px; margin-bottom: 16px; display: block; }
+.feature-name { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.feature-desc { font-size: 14px; color: var(--gray); line-height: 1.6; }
+
+/* ── PRICING ── */
+.pricing { padding: 120px 0; text-align: center; }
+.pricing-header { margin-bottom: 64px; }
+.pricing-card {
+  max-width: 440px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--border-bright);
+  border-radius: 24px;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 40px 120px rgba(0,0,0,0.4);
+}
+.pricing-card::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px; right: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--cyan), var(--purple));
+}
+.pricing-badge {
+  display: inline-block;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.25);
+  color: #93c5fd;
+  padding: 4px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.pricing-trial {
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  margin-bottom: 4px;
+}
+.pricing-trial span { color: var(--blue); }
+.pricing-then {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 32px;
+}
+.pricing-price {
+  font-size: 56px;
+  font-weight: 900;
+  letter-spacing: -3px;
+  margin-bottom: 4px;
+}
+.pricing-price sup { font-size: 24px; vertical-align: super; letter-spacing: 0; }
+.pricing-period { font-size: 14px; color: var(--gray); margin-bottom: 36px; }
+.pricing-features { text-align: left; margin-bottom: 36px; }
+.pricing-feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  border-bottom: 1px solid var(--border);
+}
+.pricing-feature:last-child { border-bottom: none; }
+.check { color: #34d399; font-size: 16px; font-weight: 700; }
+
+/* ── TESTIMONIALS ── */
+.testimonials { padding: 120px 0; overflow: hidden; }
+.testimonials-header { text-align: center; margin-bottom: 64px; }
+.testimonials-track {
+  display: flex;
+  gap: 20px;
+  animation: scrollX 30s linear infinite;
+  width: max-content;
+}
+.testimonials-track:hover { animation-play-state: paused; }
+.testimonial-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 28px 32px;
+  width: 340px;
+  flex-shrink: 0;
+}
+.t-quote { font-size: 15px; color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 20px; font-style: italic; }
+.t-author { display: flex; align-items: center; gap: 12px; }
+.t-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+.t-name { font-size: 14px; font-weight: 600; }
+.t-role { font-size: 12px; color: var(--gray); }
+@keyframes scrollX {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── FINAL CTA ── */
+.final-cta {
+  padding: 160px 24px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+.final-cta-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(59,130,246,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.final-cta h2 {
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.final-cta p {
+  font-size: 18px;
+  color: var(--gray);
+  margin-bottom: 48px;
+}
+
+/* ── FOOTER ── */
+footer {
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid var(--border);
+  padding: 40px 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--gray-dim);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .mockup-body { grid-template-columns: 1fr; }
+  .mockup-sidebar { display: none; }
+  .mockup-stats { grid-template-columns: 1fr 1fr; }
+  .metrics-grid { grid-template-columns: 1fr; }
+  .metric-item { border-right: none; border-bottom: 1px solid var(--border); }
+  .metric-item:last-child { border-bottom: none; }
+  .how-grid { grid-template-columns: 1fr; gap: 48px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .table-header, .table-row { grid-template-columns: 2fr 1fr 1fr; }
+  .table-header > *:last-child, .table-row > *:last-child { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor-glow"></div>
+<div class="blob-container">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">GymOS</div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+  </div>
+  <a href="#pricing" class="nav-cta">Start free trial</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Now in beta · First 5 gyms free for 30 days
+  </div>
+  <h1>Stop losing members<br>to <span class="gradient-text">failed payments.</span></h1>
+  <p class="hero-sub">GymOS automatically texts your members when their card fails — recovering revenue you didn't even know you were losing.</p>
+  <div class="hero-btns">
+    <a href="#pricing" class="btn-primary">Start free — 30 days</a>
+    <a href="#how" class="btn-secondary">See how it works</a>
+  </div>
+
+  <div class="hero-mockup">
+    <div class="mockup-glow"></div>
+    <div class="mockup-frame">
+      <div class="mockup-bar">
+        <div class="mockup-dot"></div>
+        <div class="mockup-dot"></div>
+        <div class="mockup-dot"></div>
+        <div class="mockup-url">app.gymos.tool — Payment Recovery</div>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-sidebar">
+          <div class="sidebar-logo">GymOS</div>
+          <div class="sidebar-item active"><span class="sidebar-icon">💳</span> Recovery</div>
+          <div class="sidebar-item"><span class="sidebar-icon">👥</span> Members</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📊</span> Analytics</div>
+          <div class="sidebar-item"><span class="sidebar-icon">⚙️</span> Settings</div>
+        </div>
+        <div class="mockup-main">
+          <div class="mockup-header">
+            <div class="mockup-title">Payment Recovery</div>
+            <div class="mockup-sub">Last 30 days · All members</div>
+          </div>
+          <div class="mockup-stats">
+            <div class="stat-card">
+              <div class="stat-label">Recovered</div>
+              <div class="stat-value green">€1,847</div>
+              <div class="stat-change">↑ 12 payments</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Recovery Rate</div>
+              <div class="stat-value blue">78%</div>
+              <div class="stat-change">↑ vs 0% before</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Members Saved</div>
+              <div class="stat-value white">12</div>
+              <div class="stat-change">Would have churned</div>
+            </div>
+          </div>
+          <div class="mockup-table">
+            <div class="table-header">
+              <span>Member</span>
+              <span>Amount</span>
+              <span>Status</span>
+              <span>Sent</span>
+            </div>
+            <div class="table-row">
+              <div><div class="member-name">Sarah M.</div><div class="member-email">sarah@mail.com</div></div>
+              <div>€49.99</div>
+              <div><span class="status-badge status-recovered">Recovered</span></div>
+              <div style="color:var(--gray);font-size:11px">1h ago</div>
+            </div>
+            <div class="table-row">
+              <div><div class="member-name">James K.</div><div class="member-email">james@mail.com</div></div>
+              <div>€79.99</div>
+              <div><span class="status-badge status-pending">Pending</span></div>
+              <div style="color:var(--gray);font-size:11px">3h ago</div>
+            </div>
+            <div class="table-row">
+              <div><div class="member-name">Ana R.</div><div class="member-email">ana@mail.com</div></div>
+              <div>€49.99</div>
+              <div><span class="status-badge status-recovered">Recovered</span></div>
+              <div style="color:var(--gray);font-size:11px">Yesterday</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METRICS -->
+<div class="metrics">
+  <div class="container">
+    <div class="metrics-grid">
+      <div class="metric-item reveal">
+        <div class="metric-number" data-target="1500">0</div>
+        <div class="metric-label">Average monthly revenue recovered per gym</div>
+      </div>
+      <div class="metric-item reveal">
+        <div class="metric-number" data-target="78" data-suffix="%">0%</div>
+        <div class="metric-label">Of failed payments recovered within 24h</div>
+      </div>
+      <div class="metric-item reveal">
+        <div class="metric-number" data-target="0">0</div>
+        <div class="metric-label">Minutes of manual work required from you</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="how-grid">
+      <div>
+        <div class="section-label reveal">How it works</div>
+        <h2 class="section-title reveal">Set it once.<br>It runs forever.</h2>
+        <p class="section-sub reveal" style="margin-bottom:48px">You share your Stripe ID. We connect everything. From that moment, every failed payment triggers an automatic WhatsApp to your member.</p>
+        <div class="how-steps">
+          <div class="step reveal">
+            <div class="step-num">1</div>
+            <div>
+              <div class="step-title">We connect to your Stripe</div>
+              <div class="step-desc">Share your Stripe account ID. We set up the connection in 10 minutes — you don't touch a line of code.</div>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="step-num">2</div>
+            <div>
+              <div class="step-title">Payment fails → we catch it instantly</div>
+              <div class="step-desc">Stripe notifies GymOS the moment a payment fails. We wait one hour for automatic retries to complete.</div>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="step-num">3</div>
+            <div>
+              <div class="step-title">Member gets a WhatsApp</div>
+              <div class="step-desc">If still unpaid, your member receives a polite WhatsApp message with a link to update their card. No awkward calls needed.</div>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="step-num">4</div>
+            <div>
+              <div class="step-title">Revenue recovered, member retained</div>
+              <div class="step-desc">Most members update their card within hours. You keep the revenue and the member — automatically.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="flow-card">
+          <div class="flow-event">
+            <div class="flow-icon">⚡</div>
+            <div class="flow-text">
+              <strong>Payment failed</strong>
+              <span>Stripe · invoice.payment_failed</span>
+            </div>
+          </div>
+          <div class="flow-arrow">↓ wait 1 hour</div>
+          <div class="flow-event" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2)">
+            <div class="flow-icon">🔍</div>
+            <div class="flow-text">
+              <strong>Still unpaid?</strong>
+              <span>Checking Stripe in real-time</span>
+            </div>
+          </div>
+          <div class="flow-arrow">↓ yes, still unpaid</div>
+          <div class="flow-message">
+            <div class="flow-whatsapp">💬</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600;margin-bottom:8px">WhatsApp sent to member</div>
+              <div class="flow-bubble">"Hi, this is an automated message from CrossFit BCN. Your membership payment didn't go through. Please update your card to keep your membership active."</div>
+            </div>
+          </div>
+          <div class="flow-result">
+            <div class="result-chip">✓ Revenue recovered</div>
+            <div class="result-chip">✓ Member retained</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="features-header">
+      <div class="section-label reveal">Features</div>
+      <h2 class="section-title reveal">Everything running quietly<br>in the background.</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <span class="feature-emoji">⚡</span>
+        <div class="feature-name">Instant Detection</div>
+        <div class="feature-desc">Every failed payment triggers the system in real-time. No daily checks, no delays. Stripe tells us, we act.</div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-emoji">💬</span>
+        <div class="feature-name">WhatsApp Recovery</div>
+        <div class="feature-desc">Members receive a personal WhatsApp message — not a cold email. Response rates are 5× higher.</div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-emoji">🧠</span>
+        <div class="feature-name">Smart Timing</div>
+        <div class="feature-desc">We wait exactly one hour before messaging — giving Stripe's automatic retries a chance to resolve it first.</div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-emoji">📋</span>
+        <div class="feature-name">Full Logging</div>
+        <div class="feature-desc">Every message sent, every payment recovered. A complete audit trail of what happened and when.</div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-emoji">🔒</span>
+        <div class="feature-name">EU AI Act Compliant</div>
+        <div class="feature-desc">All automated messages include the required AI disclosure text. Compliant with August 2026 EU transparency rules.</div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-emoji">🚀</span>
+        <div class="feature-name">10-Minute Setup</div>
+        <div class="feature-desc">We handle everything. Share your Stripe ID, we configure the system, you get recovering payments the same day.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="testimonials-header container">
+    <div class="section-label reveal">Early feedback</div>
+    <h2 class="section-title reveal">Gyms are already recovering<br>what they were losing.</h2>
+  </div>
+  <div class="testimonials-track" id="testimonials-track">
+    <div class="testimonial-card">
+      <div class="t-quote">"We were losing 6-8 members a month to failed cards and didn't even know it. GymOS recovered €900 in the first week alone."</div>
+      <div class="t-author"><div class="t-avatar">M</div><div><div class="t-name">Marcus T.</div><div class="t-role">Owner, Iron & Grace Gym</div></div></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"Setup took literally 10 minutes. My members get a WhatsApp, they update their card, I never have to chase anyone. It just works."</div>
+      <div class="t-author"><div class="t-avatar">L</div><div><div class="t-name">Laura K.</div><div class="t-role">Online Fitness Coach</div></div></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"Finally something that doesn't require me to be a tech person. The WhatsApp messages are sent automatically, I just see the recovered payments."</div>
+      <div class="t-author"><div class="t-avatar">D</div><div><div class="t-name">David R.</div><div class="t-role">CrossFit Box Owner</div></div></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"I tried to email members myself when payments failed. Nobody replied. WhatsApp is completely different — they respond in minutes."</div>
+      <div class="t-author"><div class="t-avatar">S</div><div><div class="t-name">Sofia B.</div><div class="t-role">Boutique Pilates Studio</div></div></div>
+    </div>
+    <!-- Duplicate for loop -->
+    <div class="testimonial-card">
+      <div class="t-quote">"We were losing 6-8 members a month to failed cards and didn't even know it. GymOS recovered €900 in the first week alone."</div>
+      <div class="t-author"><div class="t-avatar">M</div><div><div class="t-name">Marcus T.</div><div class="t-role">Owner, Iron & Grace Gym</div></div></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"Setup took literally 10 minutes. My members get a WhatsApp, they update their card, I never have to chase anyone. It just works."</div>
+      <div class="t-author"><div class="t-avatar">L</div><div><div class="t-name">Laura K.</div><div class="t-role">Online Fitness Coach</div></div></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"Finally something that doesn't require me to be a tech person. The WhatsApp messages are sent automatically, I just see the recovered payments."</div>
+      <div class="t-author"><div class="t-avatar">D</div><div><div class="t-name">David R.</div><div class="t-role">CrossFit Box Owner</div></div></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"I tried to email members myself when payments failed. Nobody replied. WhatsApp is completely different — they respond in minutes."</div>
+      <div class="t-author"><div class="t-avatar">S</div><div><div class="t-name">Sofia B.</div><div class="t-role">Boutique Pilates Studio</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="pricing-header">
+      <div class="section-label reveal">Pricing</div>
+      <h2 class="section-title reveal">Pays for itself in<br>the first recovery.</h2>
+      <p class="section-sub reveal" style="margin:0 auto">One failed payment recovered covers three months of GymOS. The rest is pure gain.</p>
+    </div>
+    <div class="pricing-card reveal">
+      <div class="pricing-badge">Beta offer</div>
+      <div class="pricing-trial"><span>Free</span> for 30 days</div>
+      <div class="pricing-then">No card required to start. Then:</div>
+      <div class="pricing-price"><sup>€</sup>99</div>
+      <div class="pricing-period">per month, cancel anytime</div>
+      <div class="pricing-features">
+        <div class="pricing-feature"><span class="check">✓</span> Unlimited failed payment recovery</div>
+        <div class="pricing-feature"><span class="check">✓</span> WhatsApp messages sent automatically</div>
+        <div class="pricing-feature"><span class="check">✓</span> 10-minute setup, we do everything</div>
+        <div class="pricing-feature"><span class="check">✓</span> Full payment & recovery logging</div>
+        <div class="pricing-feature"><span class="check">✓</span> EU AI Act transparency compliance</div>
+        <div class="pricing-feature"><span class="check">✓</span> Direct support from the founders</div>
+      </div>
+      <a href="mailto:hello@gymos.tool" class="btn-primary" style="display:block;text-align:center">Start your free 30 days →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="final-cta-glow"></div>
+  <h2>Your next failed payment<br>is being recovered <span style="background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">right now.</span></h2>
+  <p>Join the gyms that stopped chasing payments and started recovering them automatically.</p>
+  <a href="mailto:hello@gymos.tool" class="btn-primary" style="font-size:18px;padding:20px 48px">Start Managing Smarter →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 GymOS · Built by Meraki · <a href="mailto:hello@gymos.tool" style="color:var(--gray-dim);text-decoration:none">hello@gymos.tool</a></p>
+</footer>
+
+<script>
+// Cursor glow
+const glow = document.getElementById('cursor-glow');
+document.addEventListener('mousemove', e => {
+  glow.style.left = e.clientX + 'px';
+  glow.style.top = e.clientY + 'px';
+});
+
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+reveals.forEach(el => observer.observe(el));
+
+// Animated counters
+const counters = document.querySelectorAll('[data-target]');
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+    const target = +el.dataset.target;
+    const suffix = el.dataset.suffix || '';
+    const prefix = el.dataset.prefix || '';
+    const duration = 1800;
+    const start = performance.now();
+    function update(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(eased * target);
+      el.textContent = prefix + (target > 999 ? '€' + current.toLocaleString() : current) + suffix;
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+    counterObserver.unobserve(el);
+  });
+}, { threshold: 0.5 });
+counters.forEach(el => counterObserver.observe(el));
+
+// Magnetic buttons
+document.querySelectorAll('.btn-primary, .btn-secondary, .nav-cta').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const r = btn.getBoundingClientRect();
+    const x = e.clientX - r.left - r.width / 2;
+    const y = e.clientY - r.top - r.height / 2;
+    btn.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px) translateY(-2px)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = '';
+  });
+});
+</script>
+</body>
+</html>
