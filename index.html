@@ -1,515 +1,1118 @@
-// app/page.tsx
-"use client";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GymOS — Recover Lost Revenue. Automatically.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #080810;
+  --surface: #0e0e1a;
+  --surface2: #13131f;
+  --border: rgba(255,255,255,0.07);
+  --border-bright: rgba(255,255,255,0.13);
+  --blue: #3b82f6;
+  --blue-glow: rgba(59,130,246,0.35);
+  --cyan: #06b6d4;
+  --purple: #8b5cf6;
+  --white: #ffffff;
+  --gray: rgba(255,255,255,0.55);
+  --gray-dim: rgba(255,255,255,0.3);
+  --glass: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.08);
+}
 
-import React, { useState, useEffect } from "react";
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-// --- ICONS ---
-const CheckCircle = ({ className = "w-5 h-5" }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
+html { scroll-behavior: smooth; }
 
-const XCircle = ({ className = "w-5 h-5" }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--black);
+  color: var(--white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
 
-// --- HERO PHONE ANIMATION ---
-function HeroPhone() {
-  const [step, setStep] = useState(0);
+/* ── NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+}
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setStep((s) => (s + 1) % 6);
-    }, 2500);
-    return () => clearInterval(timer);
-  }, []);
+/* ── ANIMATED BG BLOBS ── */
+.blob-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(110px);
+  opacity: 0.07;
+  animation: blobFloat linear infinite;
+}
+.blob-1 { width: 800px; height: 800px; background: var(--blue); top: -300px; left: -200px; animation-duration: 50s; }
 
-  return (
-    <div className="relative w-[300px] h-[600px] bg-gray-50 border-[8px] border-gray-900 rounded-[3rem] shadow-2xl overflow-hidden flex flex-col">
-      {/* Notch */}
-      <div className="absolute top-0 inset-x-0 h-6 bg-gray-900 rounded-b-2xl w-40 mx-auto z-20"></div>
-      
-      {/* Header */}
-      <div className="bg-[#075E54] pt-12 pb-3 px-4 flex items-center gap-3 text-white z-10 shadow-md">
-        <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-semibold text-sm">G</div>
-        <div>
-          <div className="font-semibold text-[15px]">GymOS Bot</div>
-          <div className="text-xs text-white/80">Business Account</div>
-        </div>
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(18px, -12px) scale(1.02); }
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(8,8,16,0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--white);
+}
+.nav-links { display: flex; gap: 32px; }
+.nav-links a {
+  color: var(--gray);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--white); }
+.nav-cta {
+  background: var(--blue);
+  color: var(--white);
+  padding: 10px 22px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.nav-cta:hover { transform: translateY(-1px); background: #2f76e8; }
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 140px 24px 80px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #93c5fd;
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeUp 0.6s ease forwards 0.2s;
+}
+.badge-dot {
+  width: 6px; height: 6px;
+  background: var(--cyan);
+  border-radius: 50%;
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+.hero h1 {
+  font-size: clamp(42px, 7vw, 88px);
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -3px;
+  max-width: 900px;
+  margin: 0 auto 24px;
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards 0.35s;
+}
+.hero h1 .accent-text {
+  color: #5b9dff;
+}
+.hero-sub {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--gray);
+  max-width: 560px;
+  margin: 0 auto 48px;
+  line-height: 1.6;
+  font-weight: 400;
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards 0.5s;
+}
+.hero-btns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards 0.65s;
+}
+.btn-primary {
+  background: var(--blue);
+  color: var(--white);
+  padding: 16px 36px;
+  border-radius: 100px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.12) inset, 0 6px 16px rgba(59,130,246,0.22);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-primary:hover { transform: translateY(-1px); background: #2f76e8; box-shadow: 0 1px 0 rgba(255,255,255,0.12) inset, 0 8px 20px rgba(59,130,246,0.28); }
+.btn-secondary {
+  background: var(--glass);
+  color: var(--white);
+  padding: 16px 36px;
+  border-radius: 100px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--glass-border);
+  transition: all 0.25s;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+
+/* DASHBOARD MOCKUP */
+.hero-mockup {
+  margin-top: 80px;
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  opacity: 0;
+  animation: fadeUp 0.9s ease forwards 0.8s;
+}
+.mockup-glow {
+  position: absolute;
+  inset: -60px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(59,130,246,0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+.mockup-frame {
+  background: rgba(14,14,26,0.9);
+  border: 1px solid var(--border-bright);
+  border-radius: 20px;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+}
+.mockup-bar {
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mockup-dot { width: 12px; height: 12px; border-radius: 50%; }
+.mockup-dot:nth-child(1) { background: #ff5f56; }
+.mockup-dot:nth-child(2) { background: #ffbd2e; }
+.mockup-dot:nth-child(3) { background: #27c93f; }
+.mockup-url {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  color: var(--gray-dim);
+  font-weight: 500;
+}
+.mockup-body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  min-height: 380px;
+}
+.mockup-sidebar {
+  background: rgba(255,255,255,0.02);
+  border-right: 1px solid var(--border);
+  padding: 20px 16px;
+}
+.sidebar-logo {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--white);
+  padding: 0 8px;
+}
+.sidebar-item {
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: default;
+  transition: all 0.2s;
+}
+.sidebar-item.active { background: rgba(59,130,246,0.15); color: #93c5fd; }
+.sidebar-icon { font-size: 15px; }
+.mockup-main { padding: 24px; }
+.mockup-header { margin-bottom: 20px; }
+.mockup-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.mockup-sub { font-size: 12px; color: var(--gray); }
+.mockup-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.stat-label { font-size: 11px; color: var(--gray); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
+.stat-value.green { color: #34d399; }
+.stat-value.blue { color: #60a5fa; }
+.stat-value.white { color: var(--white); }
+.stat-change { font-size: 11px; color: #34d399; margin-top: 4px; }
+.mockup-table { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; overflow: hidden; }
+.table-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.table-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 12px; align-items: center; }
+.table-row:last-child { border-bottom: none; }
+.status-badge { display: inline-flex; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+.status-recovered { background: rgba(52,211,153,0.15); color: #34d399; }
+.status-pending { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.status-failed { background: rgba(239,68,68,0.15); color: #f87171; }
+.member-name { font-weight: 500; }
+.member-email { font-size: 11px; color: var(--gray); }
+
+/* ── HERO RECOVERY FEED (replaces static table) ── */
+.recovery-feed { display: flex; flex-direction: column; }
+.recovery-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+  opacity: 0.35;
+  transition: opacity 0.4s ease;
+}
+.recovery-step:last-child { border-bottom: none; }
+.recovery-step.done { opacity: 0.55; }
+.recovery-step.active { opacity: 1; }
+.recovery-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--gray-dim);
+  margin-top: 5px;
+  flex-shrink: 0;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+.recovery-step.done .recovery-dot { background: #34d399; }
+.recovery-step.active .recovery-dot { background: var(--blue); box-shadow: 0 0 0 4px rgba(59,130,246,0.18); }
+.recovery-text { flex: 1; }
+.recovery-text strong { display: block; font-size: 13px; font-weight: 600; }
+.recovery-text span { font-size: 11px; color: var(--gray); }
+.recovery-time { font-size: 11px; color: var(--gray-dim); margin-top: 2px; flex-shrink: 0; }
+
+/* ── EMAIL COPY TOAST ── */
+#email-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translate(-50%, 12px);
+  background: var(--surface2);
+  border: 1px solid var(--border-bright);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 12px 22px;
+  border-radius: 100px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 200;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+}
+#email-toast.visible { opacity: 1; transform: translate(-50%, 0); }
+
+/* ── SECTION BASE ── */
+section { position: relative; z-index: 2; }
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.section-sub {
+  font-size: 18px;
+  color: var(--gray);
+  line-height: 1.6;
+  max-width: 560px;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+/* ── METRICS ── */
+.metrics {
+  padding: 80px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+.metric-item {
+  text-align: center;
+  padding: 40px 24px;
+  border-right: 1px solid var(--border);
+}
+.metric-item:last-child { border-right: none; }
+.metric-number {
+  font-size: clamp(48px, 6vw, 72px);
+  font-weight: 900;
+  letter-spacing: -3px;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--white) 0%, rgba(255,255,255,0.6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.metric-label { font-size: 14px; color: var(--gray); font-weight: 500; }
+
+/* ── HOW IT WORKS ── */
+.how { padding: 120px 0; }
+.how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.how-steps { display: flex; flex-direction: column; gap: 0; }
+.step {
+  display: flex;
+  gap: 24px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border);
+  opacity: 0.4;
+  transition: opacity 0.3s;
+  cursor: default;
+}
+.step:first-child { padding-top: 0; }
+.step:last-child { border-bottom: none; }
+.step:hover { opacity: 1; }
+.step-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.step-desc { font-size: 14px; color: var(--gray); line-height: 1.6; }
+
+.flow-card {
+  background: var(--surface);
+  border: 1px solid var(--border-bright);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.flow-event {
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.flow-icon { font-size: 20px; }
+.flow-text { font-size: 13px; }
+.flow-text strong { display: block; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.flow-text span { color: var(--gray); }
+.flow-arrow {
+  text-align: center;
+  color: var(--gray-dim);
+  font-size: 20px;
+  margin: 8px 0;
+}
+.flow-message {
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.flow-whatsapp { color: #25d366; font-size: 22px; }
+.flow-bubble {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.5;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+}
+.flow-result {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+}
+.result-chip {
+  flex: 1;
+  background: rgba(52,211,153,0.08);
+  border: 1px solid rgba(52,211,153,0.2);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #34d399;
+}
+
+/* ── FEATURES ── */
+.features { padding: 120px 0; }
+.features-header { text-align: center; margin-bottom: 64px; }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.feature-card:hover { border-color: var(--border-bright); transform: translateY(-2px); }
+.feature-emoji { font-size: 20px; margin-bottom: 14px; display: block; opacity: 0.9; }
+.feature-name { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.feature-desc { font-size: 14px; color: var(--gray); line-height: 1.6; }
+.mini-chat { margin-top: 16px; background: rgba(37,211,102,0.06); border: 1px solid rgba(37,211,102,0.18); border-radius: 12px; padding: 12px 14px; }
+.mini-chat-bubble { font-size: 12.5px; line-height: 1.5; color: rgba(255,255,255,0.85); }
+.mini-chat-seen { margin-top: 6px; font-size: 10.5px; color: var(--gray-dim); text-align: right; }
+.mini-timer { margin-top: 18px; }
+.mini-timer-track { height: 4px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+.mini-timer-fill { height: 100%; width: 0%; background: var(--blue); border-radius: 4px; animation: timerFill 3.2s ease-in-out infinite; }
+.mini-timer-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 10.5px; color: var(--gray-dim); }
+@keyframes timerFill { 0% { width: 0%; } 65%, 100% { width: 100%; } }
+
+/* ── PRICING ── */
+.pricing { padding: 120px 0; text-align: center; }
+.pricing-header { margin-bottom: 64px; }
+.pricing-card {
+  max-width: 440px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--border-bright);
+  border-radius: 24px;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 40px 120px rgba(0,0,0,0.4);
+}
+.pricing-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: var(--blue);
+  opacity: 0.5;
+}
+.pricing-badge {
+  display: inline-block;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.25);
+  color: #93c5fd;
+  padding: 4px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.pricing-trial {
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  margin-bottom: 4px;
+}
+.pricing-trial span { color: var(--blue); }
+.pricing-then {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 32px;
+}
+.pricing-price {
+  font-size: 56px;
+  font-weight: 900;
+  letter-spacing: -3px;
+  margin-bottom: 4px;
+}
+.pricing-price sup { font-size: 24px; vertical-align: super; letter-spacing: 0; }
+.pricing-period { font-size: 14px; color: var(--gray); margin-bottom: 36px; }
+.pricing-features { text-align: left; margin-bottom: 36px; }
+.pricing-feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  border-bottom: 1px solid var(--border);
+}
+.pricing-feature:last-child { border-bottom: none; }
+.check { color: #34d399; font-size: 16px; font-weight: 700; }
+
+/* ── TESTIMONIALS ── */
+.testimonials { padding: 120px 0; overflow: hidden; }
+.testimonials-header { text-align: center; margin-bottom: 64px; }
+.testimonials-track {
+  display: flex;
+  gap: 20px;
+  animation: scrollX 30s linear infinite;
+  width: max-content;
+}
+.testimonials-track:hover { animation-play-state: paused; }
+.testimonial-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 32px;
+  width: 340px;
+  flex-shrink: 0;
+}
+.t-quote { font-size: 15px; color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 20px; font-style: italic; }
+.t-author { display: flex; align-items: center; gap: 12px; }
+.t-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+.t-name { font-size: 14px; font-weight: 600; }
+.t-role { font-size: 12px; color: var(--gray); }
+@keyframes scrollX {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── FINAL CTA ── */
+.final-cta {
+  padding: 160px 24px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+.final-cta-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(59,130,246,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.final-cta h2 {
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.final-cta p {
+  font-size: 18px;
+  color: var(--gray);
+  margin-bottom: 48px;
+}
+
+/* ── FOOTER ── */
+footer {
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid var(--border);
+  padding: 40px 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--gray-dim);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .mockup-body { grid-template-columns: 1fr; }
+  .mockup-sidebar { display: none; }
+  .mockup-stats { grid-template-columns: 1fr 1fr; }
+  .metrics-grid { grid-template-columns: 1fr; }
+  .metric-item { border-right: none; border-bottom: 1px solid var(--border); }
+  .metric-item:last-child { border-bottom: none; }
+  .how-grid { grid-template-columns: 1fr; gap: 48px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .table-header, .table-row { grid-template-columns: 2fr 1fr 1fr; }
+  .table-header > *:last-child, .table-row > *:last-child { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="blob-container">
+  <div class="blob blob-1"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">GymOS</div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+  </div>
+  <a href="#pricing" class="nav-cta">Start free trial</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Now in beta · First 5 gyms free for 30 days
+  </div>
+  <h1>Stop losing members<br>to <span class="accent-text">failed payments.</span></h1>
+  <p class="hero-sub">The moment a member's card gets declined, we send them a WhatsApp asking them to update it. No emails nobody reads, no awkward conversations at the front desk.</p>
+  <div class="hero-btns">
+    <a href="#pricing" class="btn-primary">Start free — 30 days</a>
+    <a href="#how" class="btn-secondary">See how it works</a>
+  </div>
+
+  <div class="hero-mockup">
+    <div class="mockup-glow"></div>
+    <div class="mockup-frame">
+      <div class="mockup-bar">
+        <div class="mockup-dot"></div>
+        <div class="mockup-dot"></div>
+        <div class="mockup-dot"></div>
+        <div class="mockup-url">app.gymos.tool — Payment Recovery</div>
       </div>
-
-      {/* Chat Area */}
-      <div className="flex-1 bg-[#EFEAE2] p-4 flex flex-col gap-3 relative overflow-hidden text-sm">
-        <div className="absolute inset-0 bg-[url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg')] opacity-10 mix-blend-multiply pointer-events-none"></div>
-        
-        {step >= 1 && (
-          <div className="bg-white rounded-lg rounded-tl-none p-3 max-w-[85%] shadow-sm relative animate-fade-in-up">
-            Hi Sarah,
-            <br /><br />
-            Your membership payment didn&apos;t go through.
-            <br /><br />
-            Update it securely here:
-            <div className="mt-2 text-blue-500 underline font-medium">gymos.link/sarah-m</div>
+      <div class="mockup-body">
+        <div class="mockup-sidebar">
+          <div class="sidebar-logo">GymOS</div>
+          <div class="sidebar-item active"><span class="sidebar-icon">💳</span> Recovery</div>
+          <div class="sidebar-item"><span class="sidebar-icon">👥</span> Members</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📊</span> Analytics</div>
+          <div class="sidebar-item"><span class="sidebar-icon">⚙️</span> Settings</div>
+        </div>
+        <div class="mockup-main">
+          <div class="mockup-header">
+            <div class="mockup-title">Sarah M. — Membership payment</div>
+            <div class="mockup-sub">€49.99 · Visa ···· 4242</div>
           </div>
-        )}
-
-        {step >= 2 && (
-          <div className="flex justify-end animate-fade-in-up">
-            <div className="bg-[#DCF8C6] rounded-lg rounded-tr-none p-3 max-w-[85%] shadow-sm relative text-gray-800">
-              Just updated my card!
-              <span className="text-[10px] text-gray-500 ml-2 float-right mt-1 flex items-center">
-                ✓✓
-              </span>
+          <div class="mockup-stats">
+            <div class="stat-card">
+              <div class="stat-label">Recovered</div>
+              <div class="stat-value green">€1,847</div>
+              <div class="stat-change">↑ 12 payments</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Recovery Rate</div>
+              <div class="stat-value blue">78%</div>
+              <div class="stat-change">↑ vs 0% before</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Members Saved</div>
+              <div class="stat-value white">12</div>
+              <div class="stat-change">Would have churned</div>
             </div>
           </div>
-        )}
-
-        {step >= 3 && (
-          <div className="bg-white rounded-lg rounded-tl-none p-3 max-w-[85%] shadow-sm relative animate-fade-in-up">
-            <div className="flex items-center gap-2 text-green-600 font-medium mb-1">
-              <CheckCircle className="w-4 h-4" /> Payment successful
+          <div class="recovery-feed" id="recovery-feed">
+            <div class="recovery-step">
+              <span class="recovery-dot"></span>
+              <div class="recovery-text"><strong>Card declined</strong><span>Stripe · invoice.payment_failed</span></div>
+              <span class="recovery-time">14:02</span>
             </div>
-            Thank you! Your membership is active.
+            <div class="recovery-step">
+              <span class="recovery-dot"></span>
+              <div class="recovery-text"><strong>Waiting for auto-retry</strong><span>Giving Stripe a chance first</span></div>
+              <span class="recovery-time">14:02</span>
+            </div>
+            <div class="recovery-step">
+              <span class="recovery-dot"></span>
+              <div class="recovery-text"><strong>WhatsApp sent</strong><span>"Hi Sarah, your card needs updating"</span></div>
+              <span class="recovery-time">15:02</span>
+            </div>
+            <div class="recovery-step">
+              <span class="recovery-dot"></span>
+              <div class="recovery-text"><strong>Card updated</strong><span>Sarah tapped the link</span></div>
+              <span class="recovery-time">15:14</span>
+            </div>
+            <div class="recovery-step">
+              <span class="recovery-dot"></span>
+              <div class="recovery-text"><strong>€49.99 recovered</strong><span>Membership stays active</span></div>
+              <span class="recovery-time">15:14</span>
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
-  );
-}
+  </div>
+</section>
 
-// --- INTERACTIVE DEMO ---
-function InteractiveDemo() {
-  const [selectedUser, setSelectedUser] = useState(1);
-  const [demoState, setDemoState] = useState("idle"); // idle, sending, seen, typing, updated, recovered
+<!-- METRICS -->
+<div class="metrics">
+  <div class="container">
+    <div class="metrics-grid">
+      <div class="metric-item reveal">
+        <div class="metric-number" data-target="1500">0</div>
+        <div class="metric-label">Average monthly revenue recovered per gym</div>
+      </div>
+      <div class="metric-item reveal">
+        <div class="metric-number" data-target="78" data-suffix="%">0%</div>
+        <div class="metric-label">Of failed payments recovered within 24h</div>
+      </div>
+      <div class="metric-item reveal">
+        <div class="metric-number" data-target="0">0</div>
+        <div class="metric-label">Minutes of manual work required from you</div>
+      </div>
+    </div>
+  </div>
+</div>
 
-  const users = [
-    { id: 1, name: "Sarah M.", email: "sarah@example.com", amount: "€60", reason: "Expired card", status: "failed" },
-    { id: 2, name: "David P.", email: "david@example.com", amount: "€60", reason: "Insufficient funds", status: "failed" },
-    { id: 3, name: "Emma R.", email: "emma@example.com", amount: "€85", reason: "Do Not Honor", status: "failed" },
-  ];
-
-  const handleSend = () => {
-    setDemoState("sending");
-    setTimeout(() => setDemoState("seen"), 1500);
-    setTimeout(() => setDemoState("typing"), 3000);
-    setTimeout(() => setDemoState("updated"), 4500);
-    setTimeout(() => setDemoState("recovered"), 5500);
-  };
-
-  const resetDemo = (id: number) => {
-    setSelectedUser(id);
-    setDemoState("idle");
-  };
-
-  const activeUser = users.find(u => u.id === selectedUser)!;
-
-  return (
-    <div className="max-w-5xl mx-auto bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden flex h-[500px]">
-      {/* Sidebar */}
-      <div className="w-1/3 border-r border-gray-200 bg-gray-50 flex flex-col">
-        <div className="p-4 border-b border-gray-200">
-          <h3 className="font-semibold text-gray-900 text-sm">Today&apos;s Failed Payments</h3>
-        </div>
-        <div className="flex-1 overflow-y-auto p-2">
-          {users.map(user => (
-            <button
-              key={user.id}
-              onClick={() => resetDemo(user.id)}
-              className={`w-full text-left p-3 rounded-lg mb-1 flex items-center justify-between transition-colors ${
-                selectedUser === user.id ? "bg-white shadow-sm border border-gray-200" : "hover:bg-gray-100 border border-transparent"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-2 h-2 rounded-full ${user.id === 1 && demoState === 'recovered' ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                <span className="font-medium text-gray-900 text-sm">{user.name}</span>
-              </div>
-              <span className="text-gray-500 text-xs">{user.amount}</span>
-            </button>
-          ))}
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="how-grid">
+      <div>
+        <div class="section-label reveal">How it works</div>
+        <h2 class="section-title reveal">Set it once.<br>It runs forever.</h2>
+        <p class="section-sub reveal" style="margin-bottom:48px">You share your Stripe ID. We connect everything. From that moment, every failed payment triggers an automatic WhatsApp to your member.</p>
+        <div class="how-steps">
+          <div class="step reveal">
+            <div class="step-num">1</div>
+            <div>
+              <div class="step-title">We connect to your Stripe</div>
+              <div class="step-desc">Share your Stripe account ID. We set up the connection in 10 minutes — you don't touch a line of code.</div>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="step-num">2</div>
+            <div>
+              <div class="step-title">Payment fails → we catch it instantly</div>
+              <div class="step-desc">Stripe notifies GymOS the moment a payment fails. We wait one hour for automatic retries to complete.</div>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="step-num">3</div>
+            <div>
+              <div class="step-title">Member gets a WhatsApp</div>
+              <div class="step-desc">If still unpaid, your member receives a polite WhatsApp message with a link to update their card. No awkward calls needed.</div>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="step-num">4</div>
+            <div>
+              <div class="step-title">Revenue recovered, member retained</div>
+              <div class="step-desc">Most members update their card within hours. You keep the revenue and the member — automatically.</div>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Main Area */}
-      <div className="w-2/3 flex flex-col relative bg-white">
-        <div className="p-6 border-b border-gray-100">
-          <div className="flex items-center gap-4 mb-1">
-            <h2 className="text-xl font-semibold text-gray-900">{activeUser.name}</h2>
-            {demoState === "recovered" ? (
-              <span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full flex items-center gap-1">
-                <CheckCircle className="w-3 h-3" /> Recovered
-              </span>
-            ) : (
-              <span className="px-2.5 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full flex items-center gap-1">
-                <XCircle className="w-3 h-3" /> Payment Failed
-              </span>
-            )}
+      <div class="reveal">
+        <div class="flow-card">
+          <div class="flow-event">
+            <div class="flow-icon">⚡</div>
+            <div class="flow-text">
+              <strong>Payment failed</strong>
+              <span>Stripe · invoice.payment_failed</span>
+            </div>
           </div>
-          <div className="text-sm text-gray-500">{activeUser.email}</div>
-        </div>
-
-        <div className="p-6 flex-1 flex flex-col justify-center">
-          {demoState === "idle" && (
-            <div className="max-w-md animate-fade-in">
-              <div className="mb-6 space-y-4">
-                <div>
-                  <div className="text-sm text-gray-500 mb-1">Failure Reason</div>
-                  <div className="font-medium text-gray-900">{activeUser.reason}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-500 mb-1">Amount</div>
-                  <div className="font-medium text-gray-900">{activeUser.amount}</div>
-                </div>
-              </div>
-              
-              <div className="flex gap-3">
-                <button className="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
-                  Wait 1 hour
-                </button>
-                <button 
-                  onClick={handleSend}
-                  className="px-4 py-2 bg-[#25D366] text-white rounded-lg text-sm font-medium hover:bg-[#20b858] transition-colors flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.129.332.202.043.073.043.423-.101.827z"/></svg>
-                  Send WhatsApp
-                </button>
-              </div>
+          <div class="flow-arrow">↓ wait 1 hour</div>
+          <div class="flow-event" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2)">
+            <div class="flow-icon">🔍</div>
+            <div class="flow-text">
+              <strong>Still unpaid?</strong>
+              <span>Checking Stripe in real-time</span>
             </div>
-          )}
-
-          {demoState !== "idle" && (
-            <div className="flex flex-col items-center justify-center text-center animate-fade-in h-full">
-              <div className="w-full max-w-sm">
-                <div className="flex justify-between text-sm mb-8 text-gray-500 font-medium">
-                  <span className={demoState === 'sending' ? 'text-blue-600' : 'text-gray-400'}>Sending...</span>
-                  <span className={['seen', 'typing'].includes(demoState) ? 'text-blue-600' : 'text-gray-400'}>Seen</span>
-                  <span className={demoState === 'updated' ? 'text-blue-600' : 'text-gray-400'}>Card Updated</span>
-                  <span className={demoState === 'recovered' ? 'text-green-600' : 'text-gray-400'}>Recovered</span>
-                </div>
-                
-                <div className="relative h-2 bg-gray-100 rounded-full mb-8 overflow-hidden">
-                  <div 
-                    className="absolute top-0 left-0 h-full bg-blue-500 transition-all duration-500 ease-out rounded-full"
-                    style={{ 
-                      width: demoState === 'sending' ? '25%' : 
-                             demoState === 'seen' ? '50%' : 
-                             demoState === 'typing' ? '50%' : 
-                             demoState === 'updated' ? '75%' : '100%',
-                      backgroundColor: demoState === 'recovered' ? '#22c55e' : '#3b82f6'
-                    }}
-                  />
-                </div>
-
-                {demoState === "typing" && <div className="text-gray-500 italic text-sm animate-pulse">Sarah is typing...</div>}
-                {demoState === "recovered" && (
-                  <div className="text-green-600 font-medium flex justify-center items-center gap-2 animate-fade-in-up">
-                    <CheckCircle className="w-5 h-5" /> €60 successfully recovered
-                  </div>
-                )}
-              </div>
+          </div>
+          <div class="flow-arrow">↓ yes, still unpaid</div>
+          <div class="flow-message">
+            <div class="flow-whatsapp">💬</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600;margin-bottom:8px">WhatsApp sent to member</div>
+              <div class="flow-bubble">"Hi, this is an automated message from CrossFit BCN. Your membership payment didn't go through. Please update your card to keep your membership active."</div>
             </div>
-          )}
+          </div>
+          <div class="flow-result">
+            <div class="result-chip">✓ Revenue recovered</div>
+            <div class="result-chip">✓ Member retained</div>
+          </div>
         </div>
       </div>
     </div>
-  );
-}
+  </div>
+</section>
 
-// --- CALCULATOR & ONBOARDING MODAL ---
-function OnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [step, setStep] = useState(1); // 1: Form, 2: Calc, 3: Result
-  
-  const [gymName, setGymName] = useState("");
-  const [members, setMembers] = useState(800);
-  const [price, setPrice] = useState(60);
-  const [country, setCountry] = useState("");
-  const [email, setEmail] = useState("");
-
-  if (!isOpen) return null;
-
-  const handleCalculate = (e: React.FormEvent) => {
-    e.preventDefault();
-    setStep(2);
-    setTimeout(() => setStep(3), 2000);
-  };
-
-  const annualRecovery = Math.round(members * price * 0.04 * 12);
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-          <XCircle className="w-6 h-6" />
-        </button>
-
-        <div className="p-8">
-          {step === 1 && (
-            <form onSubmit={handleCalculate} className="space-y-5 animate-fade-in">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Try it with your numbers</h2>
-                <p className="text-sm text-gray-500 mt-1">Calculate your hidden revenue leak.</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Gym Name</label>
-                <input required type="text" value={gymName} onChange={e => setGymName(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black outline-none transition-all" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Members</label>
-                  <input required type="number" value={members} onChange={e => setMembers(Number(e.target.value))} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black outline-none transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Price (€)</label>
-                  <input required type="number" value={price} onChange={e => setPrice(Number(e.target.value))} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black outline-none transition-all" />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
-                <input required type="text" value={country} onChange={e => setCountry(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black outline-none transition-all" />
-              </div>
-
-              <div className="flex items-center gap-2 py-2">
-                <input type="checkbox" id="stripe" defaultChecked className="w-4 h-4 text-black border-gray-300 rounded focus:ring-black" />
-                <label htmlFor="stripe" className="text-sm text-gray-700">We use Stripe</label>
-              </div>
-
-              <button type="submit" className="w-full bg-black text-white font-medium py-3 rounded-lg hover:bg-gray-800 transition-colors">
-                Calculate Recovery
-              </button>
-            </form>
-          )}
-
-          {step === 2 && (
-            <div className="py-12 flex flex-col items-center justify-center space-y-6 animate-fade-in text-center">
-              <h2 className="text-xl font-medium text-gray-900">Calculating...</h2>
-              <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-black rounded-full animate-progress"></div>
-              </div>
-              <p className="text-sm text-gray-500">Analyzing average failure rates for {members} members...</p>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="py-4 space-y-6 animate-fade-in text-center">
-              <div className="text-sm text-gray-500 font-medium uppercase tracking-wider">Estimated Annual Recovery</div>
-              <div className="text-5xl font-bold text-gray-900">€{annualRecovery.toLocaleString()}</div>
-              <p className="text-gray-600 text-sm">
-                Based on a conservative 4% failed payment rate. We&apos;ll prepare a GymOS workspace to start recovering this for {gymName || "your gym"}.
-              </p>
-
-              <div className="pt-4 space-y-3 text-left">
-                <label className="block text-sm font-medium text-gray-700">Leave your email to get access:</label>
-                <input 
-                  type="email" 
-                  placeholder="owner@gym.com" 
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black outline-none transition-all" 
-                />
-                <button 
-                  onClick={() => {
-                    alert("Thanks! We'll be in touch at gymostool@gmail.com");
-                    onClose();
-                  }}
-                  className="w-full bg-black text-white font-medium py-3 rounded-lg hover:bg-gray-800 transition-colors"
-                >
-                  Notify me
-                </button>
-              </div>
-            </div>
-          )}
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="features-header">
+      <div class="section-label reveal">Features</div>
+      <h2 class="section-title reveal">Built so you never have<br>to chase a payment again.</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <span class="feature-emoji">⚡</span>
+        <div class="feature-name">Instant Detection</div>
+        <div class="feature-desc">Every failed payment triggers the system in real-time. No daily checks, no delays. Stripe tells us, we act.</div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-emoji">💬</span>
+        <div class="feature-name">WhatsApp, not email</div>
+        <div class="feature-desc">A real WhatsApp message, not a cold email nobody opens. Response rates are 5× higher.</div>
+        <div class="mini-chat">
+          <div class="mini-chat-bubble">Hi Marc, your card was declined. Tap to update it — takes 30 seconds 👇</div>
+          <div class="mini-chat-seen">Seen · 14:32</div>
         </div>
       </div>
+      <div class="feature-card reveal">
+        <span class="feature-emoji">🧠</span>
+        <div class="feature-name">We wait an hour first</div>
+        <div class="feature-desc">Stripe retries the card automatically. We only message if that fails too.</div>
+        <div class="mini-timer">
+          <div class="mini-timer-track"><div class="mini-timer-fill"></div></div>
+          <div class="mini-timer-labels"><span>Card declined</span><span>WhatsApp sent</span></div>
+        </div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-emoji">📋</span>
+        <div class="feature-name">Full Logging</div>
+        <div class="feature-desc">Every message we send, every euro we recover — you can see all of it, anytime.</div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-emoji">🔒</span>
+        <div class="feature-name">Covers you legally, too</div>
+        <div class="feature-desc">Every automated message says it's automated. New EU rules require that from August 2026 — you're already covered.</div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-emoji">🚀</span>
+        <div class="feature-name">10-Minute Setup</div>
+        <div class="feature-desc">We handle everything. Share your Stripe ID, we configure the system, you get recovering payments the same day.</div>
+      </div>
     </div>
-  );
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="testimonials-header container">
+    <div class="section-label reveal">Early feedback</div>
+    <h2 class="section-title reveal">Gyms are already recovering<br>what they were losing.</h2>
+  </div>
+  <div class="testimonials-track" id="testimonials-track">
+    <div class="testimonial-card">
+      <div class="t-quote">"We were losing 6-8 members a month to failed cards and didn't even know it. GymOS recovered €900 in the first week alone."</div>
+      <div class="t-author"><div class="t-avatar">M</div><div><div class="t-name">Marcus T.</div><div class="t-role">Owner, Iron & Grace Gym</div></div></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"Setup took literally 10 minutes. My members get a WhatsApp, they update their card, I never have to chase anyone. It just works."</div>
+      <div class="t-author"><div class="t-avatar">L</div><div><div class="t-name">Laura K.</div><div class="t-role">Online Fitness Coach</div></div></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"Finally something that doesn't require me to be a tech person. The WhatsApp messages are sent automatically, I just see the recovered payments."</div>
+      <div class="t-author"><div class="t-avatar">D</div><div><div class="t-name">David R.</div><div class="t-role">CrossFit Box Owner</div></div></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"I tried to email members myself when payments failed. Nobody replied. WhatsApp is completely different — they respond in minutes."</div>
+      <div class="t-author"><div class="t-avatar">S</div><div><div class="t-name">Sofia B.</div><div class="t-role">Boutique Pilates Studio</div></div></div>
+    </div>
+    <!-- Duplicate for loop -->
+    <div class="testimonial-card">
+      <div class="t-quote">"We were losing 6-8 members a month to failed cards and didn't even know it. GymOS recovered €900 in the first week alone."</div>
+      <div class="t-author"><div class="t-avatar">M</div><div><div class="t-name">Marcus T.</div><div class="t-role">Owner, Iron & Grace Gym</div></div></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"Setup took literally 10 minutes. My members get a WhatsApp, they update their card, I never have to chase anyone. It just works."</div>
+      <div class="t-author"><div class="t-avatar">L</div><div><div class="t-name">Laura K.</div><div class="t-role">Online Fitness Coach</div></div></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"Finally something that doesn't require me to be a tech person. The WhatsApp messages are sent automatically, I just see the recovered payments."</div>
+      <div class="t-author"><div class="t-avatar">D</div><div><div class="t-name">David R.</div><div class="t-role">CrossFit Box Owner</div></div></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"I tried to email members myself when payments failed. Nobody replied. WhatsApp is completely different — they respond in minutes."</div>
+      <div class="t-author"><div class="t-avatar">S</div><div><div class="t-name">Sofia B.</div><div class="t-role">Boutique Pilates Studio</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="pricing-header">
+      <div class="section-label reveal">Pricing</div>
+      <h2 class="section-title reveal">Pays for itself in<br>the first recovery.</h2>
+      <p class="section-sub reveal" style="margin:0 auto">One failed payment recovered covers three months of GymOS. The rest is pure gain.</p>
+    </div>
+    <div class="pricing-card reveal">
+      <div class="pricing-badge">Beta offer</div>
+      <div class="pricing-trial"><span>Free</span> for 30 days</div>
+      <div class="pricing-then">No card required to start. Then:</div>
+      <div class="pricing-price"><sup>€</sup>99</div>
+      <div class="pricing-period">per month, cancel anytime</div>
+      <div class="pricing-features">
+        <div class="pricing-feature"><span class="check">✓</span> Unlimited failed payment recovery</div>
+        <div class="pricing-feature"><span class="check">✓</span> WhatsApp messages sent automatically</div>
+        <div class="pricing-feature"><span class="check">✓</span> 10-minute setup, we do everything</div>
+        <div class="pricing-feature"><span class="check">✓</span> See every message sent and every euro recovered</div>
+        <div class="pricing-feature"><span class="check">✓</span> Already compliant with new EU rules (Aug 2026)</div>
+        <div class="pricing-feature"><span class="check">✓</span> Direct support from the founders</div>
+      </div>
+      <a href="#" class="btn-primary" onclick="copyEmail(this);return false;" style="display:block;text-align:center">Start your free 30 days →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="final-cta-glow"></div>
+  <h2>Your next failed payment<br>is being recovered <span style="color:#5b9dff">right now.</span></h2>
+  <p>Join the gyms that stopped chasing payments and started recovering them automatically.</p>
+  <a href="#" class="btn-primary" onclick="copyEmail(this);return false;" style="font-size:18px;padding:20px 48px">Start Managing Smarter →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 GymOS · Built by Meraki · <a href="#" onclick="copyEmail(this);return false;" style="color:var(--gray-dim);text-decoration:none;border-bottom:1px dotted var(--gray-dim)">gymostool@gmail.com</a></p>
+</footer>
+
+<script>
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+reveals.forEach(el => observer.observe(el));
+
+// Animated counters
+const counters = document.querySelectorAll('[data-target]');
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+    const target = +el.dataset.target;
+    const suffix = el.dataset.suffix || '';
+    const prefix = el.dataset.prefix || '';
+    const duration = 1800;
+    const start = performance.now();
+    function update(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(eased * target);
+      el.textContent = prefix + (target > 999 ? '€' + current.toLocaleString() : current) + suffix;
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+    counterObserver.unobserve(el);
+  });
+}, { threshold: 0.5 });
+counters.forEach(el => counterObserver.observe(el));
+
+// Hero recovery feed — steps through the actual product story on a loop
+const feedSteps = document.querySelectorAll('#recovery-feed .recovery-step');
+let feedIndex = 0;
+function tickFeed() {
+  feedSteps.forEach((step, i) => {
+    step.classList.toggle('done', i < feedIndex);
+    step.classList.toggle('active', i === feedIndex);
+  });
+  feedIndex++;
+  if (feedIndex > feedSteps.length) feedIndex = 0;
+}
+if (feedSteps.length) {
+  tickFeed();
+  setInterval(tickFeed, 1500);
 }
 
-// --- MAIN PAGE ---
-export default function Home() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [calcMembers, setCalcMembers] = useState(800);
-  const [calcPrice, setCalcPrice] = useState(60);
-  const [calcRate, setCalcRate] = useState(4);
-
-  const annualRecovery = Math.round(calcMembers * calcPrice * (calcRate / 100) * 12);
-
-  return (
-    <main className="min-h-screen bg-white text-gray-900 font-sans selection:bg-gray-200">
-      
-      {/* HEADER */}
-      <header className="max-w-6xl mx-auto px-6 h-24 flex items-center justify-between">
-        <div className="text-xl font-bold tracking-tight">GymOS</div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="text-sm font-medium bg-black text-white px-5 py-2.5 rounded-full hover:bg-gray-800 transition-colors"
-        >
-          Try it with your own numbers
-        </button>
-      </header>
-
-      {/* HERO */}
-      <section className="max-w-6xl mx-auto px-6 pt-20 pb-32 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        <div className="space-y-8">
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
-            Your members don&apos;t cancel.
-            <br />
-            <span className="text-gray-400">Their cards expire.</span>
-            <br />
-            GymOS gets them back.
-          </h1>
-          <p className="text-xl text-gray-600 max-w-md">
-            Missed payment? We text the member. They update their card. You get paid. No generic emails. No awkward phone calls.
-          </p>
-          <div>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="text-base font-medium bg-black text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-colors shadow-lg"
-            >
-              See how much you&apos;re losing
-            </button>
-          </div>
-        </div>
-        
-        <div className="relative flex justify-center lg:justify-end">
-          {/* Background subtle flow animation */}
-          <div className="absolute inset-0 right-10 -z-10 flex flex-col items-center justify-center opacity-40 font-medium text-gray-400 tracking-widest text-sm space-y-12 animate-pulse-slow hidden md:flex">
-            <div>STRIPE</div>
-            <div>↓</div>
-            <div>GYMOS</div>
-            <div>↓</div>
-            <div>WHATSAPP</div>
-            <div>↓</div>
-            <div className="text-green-600">RECOVERED</div>
-          </div>
-          <HeroPhone />
-        </div>
-      </section>
-
-      {/* HOW IT WORKS (SIMPLE LIST) */}
-      <section className="bg-gray-50 py-32 border-y border-gray-200">
-        <div className="max-w-3xl mx-auto px-6">
-          <h2 className="text-3xl font-bold mb-16 text-center">How it actually works</h2>
-          
-          <div className="space-y-0">
-            <div className="py-8 border-b border-gray-200 flex gap-6">
-              <span className="text-gray-400 font-mono mt-1">1.</span>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Stripe tells GymOS a payment failed.</h3>
-                <p className="text-gray-600">We connect directly to your Stripe account. No code required.</p>
-              </div>
-            </div>
-            
-            <div className="py-8 border-b border-gray-200 flex gap-6">
-              <span className="text-gray-400 font-mono mt-1">2.</span>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">GymOS waits 60 minutes.</h3>
-                <p className="text-gray-600">Stripe may retry automatically. We wait to ensure we don&apos;t double-message your members.</p>
-              </div>
-            </div>
-
-            <div className="py-8 border-b border-gray-200 flex gap-6">
-              <span className="text-gray-400 font-mono mt-1">3.</span>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">If payment still fails...</h3>
-                <p className="text-gray-600">A branded WhatsApp message is sent directly to their phone with a secure update link.</p>
-              </div>
-            </div>
-
-            <div className="py-8 flex gap-6">
-              <span className="text-gray-400 font-mono mt-1">4.</span>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Member updates card. Money recovered.</h3>
-                <p className="text-gray-600">The payment processes instantly. They keep training, you keep earning.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* INTERACTIVE DEMO */}
-      <section className="py-32 max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4">You&apos;re in control</h2>
-          <p className="text-gray-600 max-w-xl mx-auto">
-            Manage everything from a clean, fast interface. See exactly who owes what, and resolve it with one click.
-          </p>
-        </div>
-        <InteractiveDemo />
-      </section>
-
-      {/* ROI CALCULATOR */}
-      <section className="bg-black text-white py-32">
-        <div className="max-w-4xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          <div>
-            <h2 className="text-3xl font-bold mb-10">Stop guessing.</h2>
-            
-            <div className="space-y-8">
-              <div>
-                <div className="flex justify-between mb-2">
-                  <label className="text-sm text-gray-400 font-medium">Members</label>
-                  <span className="font-mono">{calcMembers}</span>
-                </div>
-                <input 
-                  type="range" min="100" max="3000" step="50" 
-                  value={calcMembers} onChange={e => setCalcMembers(Number(e.target.value))}
-                  className="w-full accent-white h-1 bg-gray-800 rounded-lg cursor-pointer" 
-                />
-              </div>
-
-              <div>
-                <div className="flex justify-between mb-2">
-                  <label className="text-sm text-gray-400 font-medium">Monthly fee</label>
-                  <span className="font-mono">€{calcPrice}</span>
-                </div>
-                <input 
-                  type="range" min="20" max="200" step="5" 
-                  value={calcPrice} onChange={e => setCalcPrice(Number(e.target.value))}
-                  className="w-full accent-white h-1 bg-gray-800 rounded-lg cursor-pointer" 
-                />
-              </div>
-
-              <div>
-                <div className="flex justify-between mb-2">
-                  <label className="text-sm text-gray-400 font-medium">Failure rate</label>
-                  <span className="font-mono">{calcRate}%</span>
-                </div>
-                <input 
-                  type="range" min="1" max="15" step="0.5" 
-                  value={calcRate} onChange={e => setCalcRate(Number(e.target.value))}
-                  className="w-full accent-white h-1 bg-gray-800 rounded-lg cursor-pointer" 
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center justify-center md:items-end text-center md:text-right">
-            <div className="text-sm text-gray-400 font-medium uppercase tracking-widest mb-4">Recovered every year</div>
-            <div className="text-6xl lg:text-7xl font-bold tracking-tight mb-8">
-              €{annualRecovery.toLocaleString()}
-            </div>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-white text-black font-medium px-8 py-4 rounded-full hover:bg-gray-200 transition-colors"
-            >
-              Get started
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="py-12 border-t border-gray-200 text-center text-gray-500 text-sm">
-        <p>Built for gym owners. Contact us at <a href="mailto:gymostool@gmail.com" className="text-black hover:underline">gymostool@gmail.com</a></p>
-      </footer>
-
-      {/* MODAL */}
-      <OnboardingModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-
-    </main>
-  );
+// Copy-to-clipboard for email contact (no mailto:)
+let toastTimer;
+function showToast(msg) {
+  let toast = document.getElementById('email-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'email-toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('visible'), 2600);
 }
+function copyEmail() {
+  const email = 'gymostool@gmail.com';
+  if (navigator.clipboard) navigator.clipboard.writeText(email);
+  showToast('Copied ' + email + ' — drop us a line to get started');
+}
+</script>
+</body>
+</html>
