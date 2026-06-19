@@ -3,903 +3,932 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GymOS — Recover Lost Revenue. Automatically.</title>
+<title>GymOS — Stop losing members to failed payments</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root {
-  --black: #080810;
-  --surface: #0e0e1a;
-  --surface2: #13131f;
-  --border: rgba(255,255,255,0.07);
-  --border-bright: rgba(255,255,255,0.13);
-  --blue: #3b82f6;
-  --blue-glow: rgba(59,130,246,0.35);
-  --cyan: #06b6d4;
-  --purple: #8b5cf6;
-  --white: #ffffff;
-  --gray: rgba(255,255,255,0.55);
-  --gray-dim: rgba(255,255,255,0.3);
-  --glass: rgba(255,255,255,0.04);
-  --glass-border: rgba(255,255,255,0.08);
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080810;
+    --bg-card: #0e0e1a;
+    --bg-card2: #12121f;
+    --blue: #3b82f6;
+    --blue-dim: rgba(59,130,246,0.12);
+    --blue-border: rgba(59,130,246,0.25);
+    --text: #e8e8f0;
+    --text-muted: #7878a0;
+    --text-dim: #4a4a6a;
+    --border: rgba(255,255,255,0.06);
+    --font: 'Inter', sans-serif;
+  }
 
-html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; }
 
-body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background: var(--black);
-  color: var(--white);
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
 
-/* ── NOISE TEXTURE ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  opacity: 0.4;
-  pointer-events: none;
-  z-index: 1;
-}
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(8,8,16,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-/* ── ANIMATED BG BLOBS ── */
-.blob-container {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(110px);
-  opacity: 0.07;
-  animation: blobFloat linear infinite;
-}
-.blob-1 { width: 800px; height: 800px; background: var(--blue); top: -300px; left: -200px; animation-duration: 50s; }
+  .nav-logo {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--text);
+    text-decoration: none;
+  }
 
-@keyframes blobFloat {
-  0%, 100% { transform: translate(0,0) scale(1); }
-  50% { transform: translate(18px, -12px) scale(1.02); }
-}
+  .nav-logo span { color: var(--blue); }
 
-/* ── NAV ── */
-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  padding: 20px 40px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(8,8,16,0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-}
-.nav-logo {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  color: var(--white);
-}
-.nav-links { display: flex; gap: 32px; }
-.nav-links a {
-  color: var(--gray);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-.nav-links a:hover { color: var(--white); }
-.nav-cta {
-  background: var(--blue);
-  color: var(--white);
-  padding: 10px 22px;
-  border-radius: 100px;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-.nav-cta:hover { transform: translateY(-1px); background: #2f76e8; }
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
 
-/* ── HERO ── */
-.hero {
-  position: relative;
-  z-index: 2;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 140px 24px 80px;
-}
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
 
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(59,130,246,0.1);
-  border: 1px solid rgba(59,130,246,0.25);
-  border-radius: 100px;
-  padding: 6px 16px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #93c5fd;
-  margin-bottom: 32px;
-  opacity: 0;
-  animation: fadeUp 0.6s ease forwards 0.2s;
-}
-.badge-dot {
-  width: 6px; height: 6px;
-  background: var(--cyan);
-  border-radius: 50%;
-  animation: pulse 2s ease infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+  .btn-primary {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.55rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: opacity 0.2s, transform 0.15s;
+    letter-spacing: -0.01em;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
 
-.hero h1 {
-  font-size: clamp(42px, 7vw, 88px);
-  font-weight: 900;
-  line-height: 1.0;
-  letter-spacing: -3px;
-  max-width: 900px;
-  margin: 0 auto 24px;
-  opacity: 0;
-  animation: fadeUp 0.7s ease forwards 0.35s;
-}
-.hero h1 .accent-text {
-  color: #5b9dff;
-}
-.hero-sub {
-  font-size: clamp(16px, 2vw, 20px);
-  color: var(--gray);
-  max-width: 560px;
-  margin: 0 auto 48px;
-  line-height: 1.6;
-  font-weight: 400;
-  opacity: 0;
-  animation: fadeUp 0.7s ease forwards 0.5s;
-}
-.hero-btns {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-  opacity: 0;
-  animation: fadeUp 0.7s ease forwards 0.65s;
-}
-.btn-primary {
-  background: var(--blue);
-  color: var(--white);
-  padding: 16px 36px;
-  border-radius: 100px;
-  font-size: 16px;
-  font-weight: 600;
-  text-decoration: none;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.12) inset, 0 6px 16px rgba(59,130,246,0.22);
-  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-}
-.btn-primary:hover { transform: translateY(-1px); background: #2f76e8; box-shadow: 0 1px 0 rgba(255,255,255,0.12) inset, 0 8px 20px rgba(59,130,246,0.28); }
-.btn-secondary {
-  background: var(--glass);
-  color: var(--white);
-  padding: 16px 36px;
-  border-radius: 100px;
-  font-size: 16px;
-  font-weight: 600;
-  text-decoration: none;
-  border: 1px solid var(--glass-border);
-  transition: all 0.25s;
-}
-.btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.55rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.2s, border-color 0.2s, transform 0.15s;
+  }
+  .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.18); transform: translateY(-1px); }
 
-/* DASHBOARD MOCKUP */
-.hero-mockup {
-  margin-top: 80px;
-  position: relative;
-  width: 100%;
-  max-width: 900px;
-  opacity: 0;
-  animation: fadeUp 0.9s ease forwards 0.8s;
-}
-.mockup-glow {
-  position: absolute;
-  inset: -60px;
-  background: radial-gradient(ellipse at 50% 50%, rgba(59,130,246,0.2) 0%, transparent 70%);
-  pointer-events: none;
-}
-.mockup-frame {
-  background: rgba(14,14,26,0.9);
-  border: 1px solid var(--border-bright);
-  border-radius: 20px;
-  overflow: hidden;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
-}
-.mockup-bar {
-  background: rgba(255,255,255,0.03);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.mockup-dot { width: 12px; height: 12px; border-radius: 50%; }
-.mockup-dot:nth-child(1) { background: #ff5f56; }
-.mockup-dot:nth-child(2) { background: #ffbd2e; }
-.mockup-dot:nth-child(3) { background: #27c93f; }
-.mockup-url {
-  flex: 1;
-  text-align: center;
-  font-size: 12px;
-  color: var(--gray-dim);
-  font-weight: 500;
-}
-.mockup-body {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  min-height: 380px;
-}
-.mockup-sidebar {
-  background: rgba(255,255,255,0.02);
-  border-right: 1px solid var(--border);
-  padding: 20px 16px;
-}
-.sidebar-logo {
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 24px;
-  color: var(--white);
-  padding: 0 8px;
-}
-.sidebar-item {
-  padding: 9px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--gray);
-  margin-bottom: 2px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: default;
-  transition: all 0.2s;
-}
-.sidebar-item.active { background: rgba(59,130,246,0.15); color: #93c5fd; }
-.sidebar-icon { font-size: 15px; }
-.mockup-main { padding: 24px; }
-.mockup-header { margin-bottom: 20px; }
-.mockup-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-.mockup-sub { font-size: 12px; color: var(--gray); }
-.mockup-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-.stat-card {
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  padding: 16px;
-}
-.stat-label { font-size: 11px; color: var(--gray); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-.stat-value { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
-.stat-value.green { color: #34d399; }
-.stat-value.blue { color: #60a5fa; }
-.stat-value.white { color: var(--white); }
-.stat-change { font-size: 11px; color: #34d399; margin-top: 4px; }
-.mockup-table { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; overflow: hidden; }
-.table-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-.table-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 12px; align-items: center; }
-.table-row:last-child { border-bottom: none; }
-.status-badge { display: inline-flex; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; }
-.status-recovered { background: rgba(52,211,153,0.15); color: #34d399; }
-.status-pending { background: rgba(251,191,36,0.15); color: #fbbf24; }
-.status-failed { background: rgba(239,68,68,0.15); color: #f87171; }
-.member-name { font-weight: 500; }
-.member-email { font-size: 11px; color: var(--gray); }
+  /* ── CURRENCY BANNER ── */
+  .currency-banner {
+    position: fixed;
+    top: 60px; left: 0; right: 0;
+    z-index: 99;
+    background: rgba(59,130,246,0.07);
+    border-bottom: 1px solid rgba(59,130,246,0.15);
+    padding: 0.45rem 2rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 0.01em;
+  }
 
-/* ── HERO RECOVERY FEED (replaces static table) ── */
-.recovery-feed { display: flex; flex-direction: column; }
-.recovery-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 11px 0;
-  border-bottom: 1px solid var(--border);
-  opacity: 0.35;
-  transition: opacity 0.4s ease;
-}
-.recovery-step:last-child { border-bottom: none; }
-.recovery-step.done { opacity: 0.55; }
-.recovery-step.active { opacity: 1; }
-.recovery-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--gray-dim);
-  margin-top: 5px;
-  flex-shrink: 0;
-  transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-.recovery-step.done .recovery-dot { background: #34d399; }
-.recovery-step.active .recovery-dot { background: var(--blue); box-shadow: 0 0 0 4px rgba(59,130,246,0.18); }
-.recovery-text { flex: 1; }
-.recovery-text strong { display: block; font-size: 13px; font-weight: 600; }
-.recovery-text span { font-size: 11px; color: var(--gray); }
-.recovery-time { font-size: 11px; color: var(--gray-dim); margin-top: 2px; flex-shrink: 0; }
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 2rem 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 4rem;
+  }
 
-/* ── EMAIL COPY TOAST ── */
-#email-toast {
-  position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translate(-50%, 12px);
-  background: var(--surface2);
-  border: 1px solid var(--border-bright);
-  color: var(--white);
-  font-size: 13px;
-  font-weight: 500;
-  padding: 12px 22px;
-  border-radius: 100px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  z-index: 200;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
-}
-#email-toast.visible { opacity: 1; transform: translate(-50%, 0); }
+  .hero-left {
+    flex: 1;
+    min-width: 0;
+  }
 
-/* ── SECTION BASE ── */
-section { position: relative; z-index: 2; }
-.section-label {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--blue);
-  margin-bottom: 16px;
-}
-.section-title {
-  font-size: clamp(32px, 4vw, 52px);
-  font-weight: 800;
-  letter-spacing: -2px;
-  line-height: 1.1;
-  margin-bottom: 20px;
-}
-.section-sub {
-  font-size: 18px;
-  color: var(--gray);
-  line-height: 1.6;
-  max-width: 560px;
-}
-.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  .hero-right {
+    flex: 1;
+    min-width: 0;
+  }
 
-/* ── METRICS ── */
-.metrics {
-  padding: 80px 0;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-.metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
-.metric-item {
-  text-align: center;
-  padding: 40px 24px;
-  border-right: 1px solid var(--border);
-}
-.metric-item:last-child { border-right: none; }
-.metric-number {
-  font-size: clamp(48px, 6vw, 72px);
-  font-weight: 900;
-  letter-spacing: -3px;
-  line-height: 1;
-  background: linear-gradient(135deg, var(--white) 0%, rgba(255,255,255,0.6) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 8px;
-}
-.metric-label { font-size: 14px; color: var(--gray); font-weight: 500; }
+  /* Payment story */
+  .payment-story {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem 2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.8;
+    min-height: 280px;
+  }
 
-/* ── HOW IT WORKS ── */
-.how { padding: 120px 0; }
-.how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-.how-steps { display: flex; flex-direction: column; gap: 0; }
-.step {
-  display: flex;
-  gap: 24px;
-  padding: 28px 0;
-  border-bottom: 1px solid var(--border);
-  opacity: 0.4;
-  transition: opacity 0.3s;
-  cursor: default;
-}
-.step:first-child { padding-top: 0; }
-.step:last-child { border-bottom: none; }
-.step:hover { opacity: 1; }
-.step-num {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(59,130,246,0.1);
-  border: 1px solid rgba(59,130,246,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--blue);
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-.step-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-.step-desc { font-size: 14px; color: var(--gray); line-height: 1.6; }
+  .story-line {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    display: block;
+    margin-bottom: 0.15rem;
+  }
 
-.flow-card {
-  background: var(--surface);
-  border: 1px solid var(--border-bright);
-  border-radius: 20px;
-  padding: 32px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-}
-.flow-event {
-  background: rgba(239,68,68,0.08);
-  border: 1px solid rgba(239,68,68,0.2);
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.flow-icon { font-size: 20px; }
-.flow-text { font-size: 13px; }
-.flow-text strong { display: block; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-.flow-text span { color: var(--gray); }
-.flow-arrow {
-  text-align: center;
-  color: var(--gray-dim);
-  font-size: 20px;
-  margin: 8px 0;
-}
-.flow-message {
-  background: rgba(59,130,246,0.08);
-  border: 1px solid rgba(59,130,246,0.2);
-  border-radius: 12px;
-  padding: 16px 20px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-.flow-whatsapp { color: #25d366; font-size: 22px; }
-.flow-bubble {
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  padding: 10px 14px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.8);
-  line-height: 1.5;
-  margin-top: 8px;
-  border: 1px solid var(--border);
-}
-.flow-result {
-  margin-top: 16px;
-  display: flex;
-  gap: 12px;
-}
-.result-chip {
-  flex: 1;
-  background: rgba(52,211,153,0.08);
-  border: 1px solid rgba(52,211,153,0.2);
-  border-radius: 10px;
-  padding: 12px;
-  text-align: center;
-  font-size: 12px;
-  font-weight: 600;
-  color: #34d399;
-}
+  .story-line.visible {
+    opacity: 1;
+    transform: none;
+  }
 
-/* ── FEATURES ── */
-.features { padding: 120px 0; }
-.features-header { text-align: center; margin-bottom: 64px; }
-.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.feature-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 28px;
-  transition: border-color 0.2s ease, transform 0.2s ease;
-}
-.feature-card:hover { border-color: var(--border-bright); transform: translateY(-2px); }
-.feature-emoji { font-size: 20px; margin-bottom: 14px; display: block; opacity: 0.9; }
-.feature-name { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-.feature-desc { font-size: 14px; color: var(--gray); line-height: 1.6; }
-.mini-chat { margin-top: 16px; background: rgba(37,211,102,0.06); border: 1px solid rgba(37,211,102,0.18); border-radius: 12px; padding: 12px 14px; }
-.mini-chat-bubble { font-size: 12.5px; line-height: 1.5; color: rgba(255,255,255,0.85); }
-.mini-chat-seen { margin-top: 6px; font-size: 10.5px; color: var(--gray-dim); text-align: right; }
-.mini-timer { margin-top: 18px; }
-.mini-timer-track { height: 4px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
-.mini-timer-fill { height: 100%; width: 0%; background: var(--blue); border-radius: 4px; animation: timerFill 3.2s ease-in-out infinite; }
-.mini-timer-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 10.5px; color: var(--gray-dim); }
-@keyframes timerFill { 0% { width: 0%; } 65%, 100% { width: 100%; } }
+  .story-time { color: var(--text-muted); margin-right: 1rem; }
+  .story-red { color: #f87171; }
+  .story-dim { color: var(--text-dim); font-size: 0.8rem; padding-left: 5.5rem; }
+  .story-blue { color: var(--blue); }
+  .story-sep {
+    display: block;
+    height: 1px;
+    background: var(--border);
+    margin: 1rem 0;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .story-sep.visible { opacity: 1; }
+  .story-green { color: #4ade80; }
+  .story-indent { padding-left: 5.5rem; color: var(--text-muted); font-size: 0.82rem; }
 
-/* ── PRICING ── */
-.pricing { padding: 120px 0; text-align: center; }
-.pricing-header { margin-bottom: 64px; }
-.pricing-card {
-  max-width: 440px;
-  margin: 0 auto;
-  background: var(--surface);
-  border: 1px solid var(--border-bright);
-  border-radius: 24px;
-  padding: 48px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 40px 120px rgba(0,0,0,0.4);
-}
-.pricing-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: var(--blue);
-  opacity: 0.5;
-}
-.pricing-badge {
-  display: inline-block;
-  background: rgba(59,130,246,0.1);
-  border: 1px solid rgba(59,130,246,0.25);
-  color: #93c5fd;
-  padding: 4px 14px;
-  border-radius: 100px;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 24px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.pricing-trial {
-  font-size: 48px;
-  font-weight: 900;
-  letter-spacing: -2px;
-  margin-bottom: 4px;
-}
-.pricing-trial span { color: var(--blue); }
-.pricing-then {
-  font-size: 14px;
-  color: var(--gray);
-  margin-bottom: 32px;
-}
-.pricing-price {
-  font-size: 56px;
-  font-weight: 900;
-  letter-spacing: -3px;
-  margin-bottom: 4px;
-}
-.pricing-price sup { font-size: 24px; vertical-align: super; letter-spacing: 0; }
-.pricing-period { font-size: 14px; color: var(--gray); margin-bottom: 36px; }
-.pricing-features { text-align: left; margin-bottom: 36px; }
-.pricing-feature {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  font-size: 14px;
-  color: rgba(255,255,255,0.85);
-  border-bottom: 1px solid var(--border);
-}
-.pricing-feature:last-child { border-bottom: none; }
-.check { color: #34d399; font-size: 16px; font-weight: 700; }
+  /* Hero right */
+  .hero-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 1.25rem;
+  }
 
-/* ── TESTIMONIALS ── */
-.testimonials { padding: 120px 0; overflow: hidden; }
-.testimonials-header { text-align: center; margin-bottom: 64px; }
-.testimonials-track {
-  display: flex;
-  gap: 20px;
-  animation: scrollX 30s linear infinite;
-  width: max-content;
-}
-.testimonials-track:hover { animation-play-state: paused; }
-.testimonial-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 28px 32px;
-  width: 340px;
-  flex-shrink: 0;
-}
-.t-quote { font-size: 15px; color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 20px; font-style: italic; }
-.t-author { display: flex; align-items: center; gap: 12px; }
-.t-avatar {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--blue), var(--purple));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-}
-.t-name { font-size: 14px; font-weight: 600; }
-.t-role { font-size: 12px; color: var(--gray); }
-@keyframes scrollX {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
+  .hero-h1 {
+    font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+    color: #fff;
+    margin-bottom: 1.5rem;
+  }
 
-/* ── FINAL CTA ── */
-.final-cta {
-  padding: 160px 24px;
-  text-align: center;
-  position: relative;
-  z-index: 2;
-}
-.final-cta-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 700px;
-  height: 400px;
-  background: radial-gradient(ellipse, rgba(59,130,246,0.15) 0%, transparent 70%);
-  pointer-events: none;
-}
-.final-cta h2 {
-  font-size: clamp(36px, 5vw, 64px);
-  font-weight: 900;
-  letter-spacing: -2px;
-  line-height: 1.1;
-  margin-bottom: 20px;
-  max-width: 700px;
-  margin-left: auto;
-  margin-right: auto;
-}
-.final-cta p {
-  font-size: 18px;
-  color: var(--gray);
-  margin-bottom: 48px;
-}
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    max-width: 440px;
+  }
 
-/* ── FOOTER ── */
-footer {
-  position: relative;
-  z-index: 2;
-  border-top: 1px solid var(--border);
-  padding: 40px 24px;
-  text-align: center;
-  font-size: 13px;
-  color: var(--gray-dim);
-}
+  .hero-sub strong { color: var(--text); font-weight: 500; }
 
-/* ── ANIMATIONS ── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.reveal {
-  opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
-}
-.reveal.visible { opacity: 1; transform: translateY(0); }
+  .hero-ctas {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
 
-/* ── RESPONSIVE ── */
-@media (max-width: 768px) {
-  nav { padding: 16px 20px; }
-  .nav-links { display: none; }
-  .mockup-body { grid-template-columns: 1fr; }
-  .mockup-sidebar { display: none; }
-  .mockup-stats { grid-template-columns: 1fr 1fr; }
-  .metrics-grid { grid-template-columns: 1fr; }
-  .metric-item { border-right: none; border-bottom: 1px solid var(--border); }
-  .metric-item:last-child { border-bottom: none; }
-  .how-grid { grid-template-columns: 1fr; gap: 48px; }
-  .features-grid { grid-template-columns: 1fr; }
-  .table-header, .table-row { grid-template-columns: 2fr 1fr 1fr; }
-  .table-header > *:last-child, .table-row > *:last-child { display: none; }
-}
+  /* ── SECTION BASE ── */
+  .section {
+    padding: 100px 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-}
+  .section-full {
+    padding: 100px 2rem;
+    width: 100%;
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .section-h2 {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+
+  .section-sub {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 520px;
+    margin-bottom: 3rem;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 3rem;
+    position: relative;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 1.25rem;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--border) 10%, var(--border) 90%, transparent);
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 2rem;
+    cursor: pointer;
+    padding: 1.5rem 0;
+    position: relative;
+  }
+
+  .timeline-dot {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    z-index: 1;
+  }
+
+  .timeline-item:hover .timeline-dot,
+  .timeline-item.active .timeline-dot {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+  }
+
+  .timeline-body { flex: 1; padding-top: 0.3rem; }
+
+  .timeline-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-bottom: 0;
+    transition: color 0.2s;
+  }
+  .timeline-item:hover .timeline-title,
+  .timeline-item.active .timeline-title { color: #fff; }
+
+  .timeline-detail {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s ease;
+    opacity: 0;
+    margin-top: 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .timeline-item.active .timeline-detail,
+  .timeline-item:hover .timeline-detail {
+    max-height: 120px;
+    opacity: 1;
+    margin-top: 0.6rem;
+  }
+
+  /* ── BIG STATEMENT ── */
+  .big-statement {
+    text-align: center;
+    padding: 120px 2rem;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .big-statement p {
+    font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.2;
+    color: #fff;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  /* ── ROI CALCULATOR ── */
+  .calculator-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3rem;
+    margin-top: 3rem;
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .slider-group { margin-bottom: 2rem; }
+  .slider-group:last-child { margin-bottom: 0; }
+
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.6rem;
+  }
+
+  .slider-label span:first-child {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+
+  .slider-val {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--blue);
+    cursor: pointer;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    transition: box-shadow 0.2s;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 0 6px rgba(59,130,246,0.2);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--blue);
+    cursor: pointer;
+    border: none;
+  }
+
+  .calc-results { display: flex; flex-direction: column; gap: 1rem; }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+  }
+
+  .result-row.highlight {
+    background: rgba(59,130,246,0.08);
+    border-color: rgba(59,130,246,0.2);
+  }
+
+  .result-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .result-amount {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    transition: color 0.2s;
+  }
+
+  .result-row.highlight .result-amount {
+    color: var(--blue);
+    font-size: 1.4rem;
+  }
+
+  .result-sub {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 0.15rem;
+  }
+
+  /* ── WHY IT WORKS ── */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 3rem;
+  }
+
+  .why-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.75rem;
+    transition: border-color 0.2s;
+  }
+
+  .why-card:hover { border-color: rgba(255,255,255,0.12); }
+
+  .why-card h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  .why-card p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ── FOUNDER ── */
+  .founder-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3rem;
+    max-width: 680px;
+    margin: 3rem auto 0;
+  }
+
+  .founder-card blockquote {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 1.5rem;
+  }
+
+  .founder-sig {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text);
+    font-style: normal;
+  }
+
+  /* ── PRICING ── */
+  .pricing-wrap {
+    max-width: 480px;
+    margin: 3rem auto 0;
+  }
+
+  .pricing-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pricing-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--blue);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .pricing-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(59,130,246,0.12);
+    border: 1px solid rgba(59,130,246,0.25);
+    color: var(--blue);
+    border-radius: 999px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .pricing-big {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  .pricing-sub {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 1.75rem;
+    line-height: 1.5;
+  }
+
+  .pricing-price {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pricing-price strong { color: var(--text); }
+
+  .features-list { list-style: none; margin-bottom: 2rem; }
+  .features-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.45rem 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .features-list li:last-child { border-bottom: none; }
+  .features-list .check {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: rgba(74,222,128,0.12);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: #4ade80;
+    font-size: 0.65rem;
+  }
+
+  /* ── FINAL CTA ── */
+  .final-cta {
+    text-align: center;
+    padding: 140px 2rem;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+  }
+
+  .final-cta p {
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .final-cta p strong { color: #fff; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.in-view {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ── HAMBURGER ── */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .hamburger span {
+    display: block;
+    width: 22px; height: 2px;
+    background: var(--text-muted);
+    border-radius: 2px;
+    transition: all 0.25s;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .nav-cta { display: none; }
+
+    .mobile-menu {
+      position: fixed;
+      top: 60px; left: 0; right: 0;
+      background: rgba(8,8,16,0.97);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: none;
+      flex-direction: column;
+      gap: 1.25rem;
+      z-index: 98;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .hero {
+      flex-direction: column;
+      padding: 100px 1.5rem 60px;
+      gap: 2.5rem;
+      min-height: unset;
+    }
+
+    .section { padding: 70px 1.5rem; }
+    .section-full { padding: 70px 1.5rem; }
+
+    .calc-grid { grid-template-columns: 1fr; gap: 2rem; }
+
+    .calculator-wrap { padding: 1.75rem; }
+
+    .founder-card { padding: 2rem; }
+
+    .big-statement { padding: 80px 1.5rem; }
+
+    .final-cta { padding: 80px 1.5rem; }
+
+    .hero-ctas { flex-direction: column; }
+    .hero-ctas .btn-primary,
+    .hero-ctas .btn-ghost { width: 100%; justify-content: center; }
+  }
+
+  /* Reduce motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  }
 </style>
 </head>
 <body>
 
-<div class="blob-container">
-  <div class="blob blob-1"></div>
-</div>
-
 <!-- NAV -->
 <nav>
-  <div class="nav-logo">GymOS</div>
-  <div class="nav-links">
-    <a href="#how">How it works</a>
-    <a href="#features">Features</a>
-    <a href="#pricing">Pricing</a>
+  <a href="#" class="nav-logo">Gym<span>OS</span></a>
+  <ul class="nav-links">
+    <li><a href="#how-it-works">How it works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+  <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" rel="noopener" class="btn-primary nav-cta">Start free trial</a>
+  <div class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
   </div>
-  <a href="#pricing" class="nav-cta">Start free trial</a>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-badge">
-    <span class="badge-dot"></span>
-    Now in beta · First 5 gyms free for 30 days
-  </div>
-  <h1>Stop losing members<br>to <span class="accent-text">failed payments.</span></h1>
-  <p class="hero-sub">The moment a member's card gets declined, we send them a WhatsApp asking them to update it. No emails nobody reads, no awkward conversations at the front desk.</p>
-  <div class="hero-btns">
-    <a href="#pricing" class="btn-primary">Start free — 30 days</a>
-    <a href="#how" class="btn-secondary">See how it works</a>
-  </div>
-
-  <div class="hero-mockup">
-    <div class="mockup-glow"></div>
-    <div class="mockup-frame">
-      <div class="mockup-bar">
-        <div class="mockup-dot"></div>
-        <div class="mockup-dot"></div>
-        <div class="mockup-dot"></div>
-        <div class="mockup-url">app.gymos.tool — Payment Recovery</div>
-      </div>
-      <div class="mockup-body">
-        <div class="mockup-sidebar">
-          <div class="sidebar-logo">GymOS</div>
-          <div class="sidebar-item active"><span class="sidebar-icon">💳</span> Recovery</div>
-          <div class="sidebar-item"><span class="sidebar-icon">👥</span> Members</div>
-          <div class="sidebar-item"><span class="sidebar-icon">📊</span> Analytics</div>
-          <div class="sidebar-item"><span class="sidebar-icon">⚙️</span> Settings</div>
-        </div>
-        <div class="mockup-main">
-          <div class="mockup-header">
-            <div class="mockup-title">Sarah M. — Membership payment</div>
-            <div class="mockup-sub">€49.99 · Visa ···· 4242</div>
-          </div>
-          <div class="mockup-stats">
-            <div class="stat-card">
-              <div class="stat-label">Recovered</div>
-              <div class="stat-value green">€1,847</div>
-              <div class="stat-change">↑ 12 payments</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Recovery Rate</div>
-              <div class="stat-value blue">78%</div>
-              <div class="stat-change">↑ vs 0% before</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Members Saved</div>
-              <div class="stat-value white">12</div>
-              <div class="stat-change">Would have churned</div>
-            </div>
-          </div>
-          <div class="recovery-feed" id="recovery-feed">
-            <div class="recovery-step">
-              <span class="recovery-dot"></span>
-              <div class="recovery-text"><strong>Card declined</strong><span>Stripe · invoice.payment_failed</span></div>
-              <span class="recovery-time">14:02</span>
-            </div>
-            <div class="recovery-step">
-              <span class="recovery-dot"></span>
-              <div class="recovery-text"><strong>Waiting for auto-retry</strong><span>Giving Stripe a chance first</span></div>
-              <span class="recovery-time">14:02</span>
-            </div>
-            <div class="recovery-step">
-              <span class="recovery-dot"></span>
-              <div class="recovery-text"><strong>WhatsApp sent</strong><span>"Hi Sarah, your card needs updating"</span></div>
-              <span class="recovery-time">15:02</span>
-            </div>
-            <div class="recovery-step">
-              <span class="recovery-dot"></span>
-              <div class="recovery-text"><strong>Card updated</strong><span>Sarah tapped the link</span></div>
-              <span class="recovery-time">15:14</span>
-            </div>
-            <div class="recovery-step">
-              <span class="recovery-dot"></span>
-              <div class="recovery-text"><strong>€49.99 recovered</strong><span>Membership stays active</span></div>
-              <span class="recovery-time">15:14</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- METRICS -->
-<div class="metrics">
-  <div class="container">
-    <div class="metrics-grid">
-      <div class="metric-item reveal">
-        <div class="metric-number" data-target="1500">0</div>
-        <div class="metric-label">Average monthly revenue recovered per gym</div>
-      </div>
-      <div class="metric-item reveal">
-        <div class="metric-number" data-target="78" data-suffix="%">0%</div>
-        <div class="metric-label">Of failed payments recovered within 24h</div>
-      </div>
-      <div class="metric-item reveal">
-        <div class="metric-number" data-target="0">0</div>
-        <div class="metric-label">Minutes of manual work required from you</div>
-      </div>
-    </div>
-  </div>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#how-it-works" onclick="closeMobileMenu()">How it works</a>
+  <a href="#features" onclick="closeMobileMenu()">Features</a>
+  <a href="#pricing" onclick="closeMobileMenu()">Pricing</a>
+  <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" rel="noopener" class="btn-primary" style="margin-top:0.5rem;justify-content:center;">Start free trial</a>
 </div>
 
+<!-- CURRENCY BANNER -->
+<div class="currency-banner" id="currency-banner">
+  Detecting your location…
+</div>
+
+<!-- HERO -->
+<section style="padding-top: 96px;">
+  <div class="hero">
+    <!-- Left: animated story -->
+    <div class="hero-left">
+      <div class="payment-story" id="payment-story" aria-live="polite"></div>
+    </div>
+
+    <!-- Right: headline -->
+    <div class="hero-right">
+      <div class="hero-tag">Payment recovery · WhatsApp automation</div>
+      <h1 class="hero-h1">Stop losing members to failed payments.</h1>
+      <p class="hero-sub">
+        The moment a card gets declined, your members get a WhatsApp.
+        Not an email nobody reads. <strong>A WhatsApp.</strong>
+        They update in minutes.
+        You find out when the money appears.
+      </p>
+      <div class="hero-ctas">
+        <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" rel="noopener" class="btn-primary" style="font-size:0.95rem;padding:0.7rem 1.5rem;">
+          Start free — 30 days
+        </a>
+        <a href="#how-it-works" class="btn-ghost" style="font-size:0.95rem;padding:0.7rem 1.5rem;">
+          See how it works
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
 <!-- HOW IT WORKS -->
-<section class="how" id="how">
-  <div class="container">
-    <div class="how-grid">
-      <div>
-        <div class="section-label reveal">How it works</div>
-        <h2 class="section-title reveal">Set it once.<br>It runs forever.</h2>
-        <p class="section-sub reveal" style="margin-bottom:48px">You share your Stripe ID. We connect everything. From that moment, every failed payment triggers an automatic WhatsApp to your member.</p>
-        <div class="how-steps">
-          <div class="step reveal">
-            <div class="step-num">1</div>
-            <div>
-              <div class="step-title">We connect to your Stripe</div>
-              <div class="step-desc">Share your Stripe account ID. We set up the connection in 10 minutes — you don't touch a line of code.</div>
-            </div>
-          </div>
-          <div class="step reveal">
-            <div class="step-num">2</div>
-            <div>
-              <div class="step-title">Payment fails → we catch it instantly</div>
-              <div class="step-desc">Stripe notifies GymOS the moment a payment fails. We wait one hour for automatic retries to complete.</div>
-            </div>
-          </div>
-          <div class="step reveal">
-            <div class="step-num">3</div>
-            <div>
-              <div class="step-title">Member gets a WhatsApp</div>
-              <div class="step-desc">If still unpaid, your member receives a polite WhatsApp message with a link to update their card. No awkward calls needed.</div>
-            </div>
-          </div>
-          <div class="step reveal">
-            <div class="step-num">4</div>
-            <div>
-              <div class="step-title">Revenue recovered, member retained</div>
-              <div class="step-desc">Most members update their card within hours. You keep the revenue and the member — automatically.</div>
-            </div>
-          </div>
+<section id="how-it-works">
+  <div class="section">
+    <span class="section-label reveal">How it works</span>
+    <h2 class="section-h2 reveal">Simple. Automatic. Done.</h2>
+    <p class="section-sub reveal">Five steps, none of which require you to do anything.</p>
+
+    <div class="timeline reveal">
+
+      <div class="timeline-item" onclick="toggleTimeline(this)">
+        <div class="timeline-dot">1</div>
+        <div class="timeline-body">
+          <div class="timeline-title">Card declined</div>
+          <div class="timeline-detail">Stripe detects the failed payment the moment it happens and fires a webhook. GymOS picks it up instantly — no manual checking, no delays.</div>
         </div>
       </div>
-      <div class="reveal">
-        <div class="flow-card">
-          <div class="flow-event">
-            <div class="flow-icon">⚡</div>
-            <div class="flow-text">
-              <strong>Payment failed</strong>
-              <span>Stripe · invoice.payment_failed</span>
+
+      <div class="timeline-item" onclick="toggleTimeline(this)">
+        <div class="timeline-dot">2</div>
+        <div class="timeline-body">
+          <div class="timeline-title">We wait 60 minutes</div>
+          <div class="timeline-detail">Stripe has its own automatic retry logic. We respect that. GymOS sits quietly for an hour. If Stripe recovers the payment on its own, we do nothing at all. We only step in when it's clear the retry didn't work.</div>
+        </div>
+      </div>
+
+      <div class="timeline-item" onclick="toggleTimeline(this)">
+        <div class="timeline-dot">3</div>
+        <div class="timeline-body">
+          <div class="timeline-title">WhatsApp sent</div>
+          <div class="timeline-detail">A polite, personal message goes to your member. It includes a direct link to Stripe's secure card-update page. No login required, no friction — just a 30-second fix from their phone.</div>
+        </div>
+      </div>
+
+      <div class="timeline-item" onclick="toggleTimeline(this)">
+        <div class="timeline-dot">4</div>
+        <div class="timeline-body">
+          <div class="timeline-title">Member updates their card</div>
+          <div class="timeline-detail">They tap the link, enter new card details on a Stripe-hosted page, and they're done. PCI compliant, encrypted, and fast. Most members do this within minutes of receiving the message.</div>
+        </div>
+      </div>
+
+      <div class="timeline-item" onclick="toggleTimeline(this)">
+        <div class="timeline-dot">5</div>
+        <div class="timeline-body">
+          <div class="timeline-title">Money recovered</div>
+          <div class="timeline-detail">Stripe retries the payment automatically. The charge goes through, the membership stays active, and you see the money land in your Stripe dashboard. You didn't need to do a thing.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- BIG STATEMENT -->
+<div class="big-statement reveal">
+  <p>"A declined payment should never become a cancelled membership."</p>
+</div>
+
+<!-- ROI CALCULATOR -->
+<section id="calculator">
+  <div class="section">
+    <span class="section-label reveal">ROI Calculator</span>
+    <h2 class="section-h2 reveal">See what you're leaving on the table.</h2>
+    <p class="section-sub reveal">Move the sliders. The numbers are real.</p>
+
+    <div class="calculator-wrap reveal">
+      <div class="calc-grid">
+        <!-- Sliders -->
+        <div>
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Number of members</span>
+              <span class="slider-val" id="val-members">300</span>
+            </div>
+            <input type="range" id="slider-members" min="50" max="2000" step="10" value="300" oninput="updateCalc()">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Monthly membership fee</span>
+              <span class="slider-val" id="val-fee"><span class="currency-sym">€</span>55</span>
+            </div>
+            <input type="range" id="slider-fee" min="20" max="200" step="5" value="55" oninput="updateCalc()">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Estimated failure rate</span>
+              <span class="slider-val" id="val-rate">4%</span>
+            </div>
+            <input type="range" id="slider-rate" min="1" max="10" step="0.5" value="4" oninput="updateCalc()">
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div class="calc-results">
+          <div class="result-row">
+            <div>
+              <div class="result-label">Lost per month without GymOS</div>
+            </div>
+            <div>
+              <div class="result-amount" id="res-lost">—</div>
             </div>
           </div>
-          <div class="flow-arrow">↓ wait 1 hour</div>
-          <div class="flow-event" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2)">
-            <div class="flow-icon">🔍</div>
-            <div class="flow-text">
-              <strong>Still unpaid?</strong>
-              <span>Checking Stripe in real-time</span>
+
+          <div class="result-row">
+            <div>
+              <div class="result-label">Recovered with GymOS (78% rate)</div>
+            </div>
+            <div>
+              <div class="result-amount" id="res-recovered">—</div>
             </div>
           </div>
-          <div class="flow-arrow">↓ yes, still unpaid</div>
-          <div class="flow-message">
-            <div class="flow-whatsapp">💬</div>
-            <div style="flex:1">
-              <div style="font-size:13px;font-weight:600;margin-bottom:8px">WhatsApp sent to member</div>
-              <div class="flow-bubble">"Hi, this is an automated message from CrossFit BCN. Your membership payment didn't go through. Please update your card to keep your membership active."</div>
+
+          <div class="result-row">
+            <div>
+              <div class="result-label">GymOS costs</div>
+            </div>
+            <div>
+              <div class="result-amount" id="res-cost">—</div>
             </div>
           </div>
-          <div class="flow-result">
-            <div class="result-chip">✓ Revenue recovered</div>
-            <div class="result-chip">✓ Member retained</div>
+
+          <div class="result-row highlight">
+            <div>
+              <div class="result-label">Your net gain per month</div>
+              <div class="result-sub" id="res-year-label">—</div>
+            </div>
+            <div>
+              <div class="result-amount" id="res-net">—</div>
+            </div>
           </div>
         </div>
       </div>
@@ -907,212 +936,298 @@ footer {
   </div>
 </section>
 
-<!-- FEATURES -->
-<section class="features" id="features">
-  <div class="container">
-    <div class="features-header">
-      <div class="section-label reveal">Features</div>
-      <h2 class="section-title reveal">Built so you never have<br>to chase a payment again.</h2>
-    </div>
-    <div class="features-grid">
-      <div class="feature-card reveal">
-        <span class="feature-emoji">⚡</span>
-        <div class="feature-name">Instant Detection</div>
-        <div class="feature-desc">Every failed payment triggers the system in real-time. No daily checks, no delays. Stripe tells us, we act.</div>
+<div class="divider"></div>
+
+<!-- WHY IT WORKS -->
+<section id="features">
+  <div class="section">
+    <span class="section-label reveal">Why it works</span>
+    <h2 class="section-h2 reveal">Five honest reasons.</h2>
+
+    <div class="why-grid reveal" id="features">
+      <div class="why-card">
+        <h3>Works with Stripe</h3>
+        <p>If your gym software takes card payments, it almost certainly runs on Stripe underneath. GymOS plugs straight in — no complex integrations, no new payment provider to sign up for.</p>
       </div>
-      <div class="feature-card reveal">
-        <span class="feature-emoji">💬</span>
-        <div class="feature-name">WhatsApp, not email</div>
-        <div class="feature-desc">A real WhatsApp message, not a cold email nobody opens. Response rates are 5× higher.</div>
-        <div class="mini-chat">
-          <div class="mini-chat-bubble">Hi Marc, your card was declined. Tap to update it — takes 30 seconds 👇</div>
-          <div class="mini-chat-seen">Seen · 14:32</div>
-        </div>
+      <div class="why-card">
+        <h3>Uses WhatsApp</h3>
+        <p>Open rates for WhatsApp messages are around 5× higher than email. Your members already have it open. That's just where people actually read things in 2026.</p>
       </div>
-      <div class="feature-card reveal">
-        <span class="feature-emoji">🧠</span>
-        <div class="feature-name">We wait an hour first</div>
-        <div class="feature-desc">Stripe retries the card automatically. We only message if that fails too.</div>
-        <div class="mini-timer">
-          <div class="mini-timer-track"><div class="mini-timer-fill"></div></div>
-          <div class="mini-timer-labels"><span>Card declined</span><span>WhatsApp sent</span></div>
-        </div>
+      <div class="why-card">
+        <h3>Waits before messaging</h3>
+        <p>Stripe retries automatically. We only message if that retry fails. So your members never get a panicked message about a payment that was going to go through anyway.</p>
       </div>
-      <div class="feature-card reveal">
-        <span class="feature-emoji">📋</span>
-        <div class="feature-name">Full Logging</div>
-        <div class="feature-desc">Every message we send, every euro we recover — you can see all of it, anytime.</div>
+      <div class="why-card">
+        <h3>10-minute setup</h3>
+        <p>You share your Stripe ID. We handle everything else. No developer needed, no new software to learn. Most gyms are live the same day they sign up.</p>
       </div>
-      <div class="feature-card reveal">
-        <span class="feature-emoji">🔒</span>
-        <div class="feature-name">Covers you legally, too</div>
-        <div class="feature-desc">Every automated message says it's automated. New EU rules require that from August 2026 — you're already covered.</div>
-      </div>
-      <div class="feature-card reveal">
-        <span class="feature-emoji">🚀</span>
-        <div class="feature-name">10-Minute Setup</div>
-        <div class="feature-desc">We handle everything. Share your Stripe ID, we configure the system, you get recovering payments the same day.</div>
+      <div class="why-card">
+        <h3>Already EU compliant</h3>
+        <p>Every message includes the required disclosure under the EU AI Act, which takes full effect in August 2026. You're covered before most gyms even know it applies to them.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- TESTIMONIALS -->
-<section class="testimonials">
-  <div class="testimonials-header container">
-    <div class="section-label reveal">Early feedback</div>
-    <h2 class="section-title reveal">Gyms are already recovering<br>what they were losing.</h2>
-  </div>
-  <div class="testimonials-track" id="testimonials-track">
-    <div class="testimonial-card">
-      <div class="t-quote">"We were losing 6-8 members a month to failed cards and didn't even know it. GymOS recovered €900 in the first week alone."</div>
-      <div class="t-author"><div class="t-avatar">M</div><div><div class="t-name">Marcus T.</div><div class="t-role">Owner, Iron & Grace Gym</div></div></div>
-    </div>
-    <div class="testimonial-card">
-      <div class="t-quote">"Setup took literally 10 minutes. My members get a WhatsApp, they update their card, I never have to chase anyone. It just works."</div>
-      <div class="t-author"><div class="t-avatar">L</div><div><div class="t-name">Laura K.</div><div class="t-role">Online Fitness Coach</div></div></div>
-    </div>
-    <div class="testimonial-card">
-      <div class="t-quote">"Finally something that doesn't require me to be a tech person. The WhatsApp messages are sent automatically, I just see the recovered payments."</div>
-      <div class="t-author"><div class="t-avatar">D</div><div><div class="t-name">David R.</div><div class="t-role">CrossFit Box Owner</div></div></div>
-    </div>
-    <div class="testimonial-card">
-      <div class="t-quote">"I tried to email members myself when payments failed. Nobody replied. WhatsApp is completely different — they respond in minutes."</div>
-      <div class="t-author"><div class="t-avatar">S</div><div><div class="t-name">Sofia B.</div><div class="t-role">Boutique Pilates Studio</div></div></div>
-    </div>
-    <!-- Duplicate for loop -->
-    <div class="testimonial-card">
-      <div class="t-quote">"We were losing 6-8 members a month to failed cards and didn't even know it. GymOS recovered €900 in the first week alone."</div>
-      <div class="t-author"><div class="t-avatar">M</div><div><div class="t-name">Marcus T.</div><div class="t-role">Owner, Iron & Grace Gym</div></div></div>
-    </div>
-    <div class="testimonial-card">
-      <div class="t-quote">"Setup took literally 10 minutes. My members get a WhatsApp, they update their card, I never have to chase anyone. It just works."</div>
-      <div class="t-author"><div class="t-avatar">L</div><div><div class="t-name">Laura K.</div><div class="t-role">Online Fitness Coach</div></div></div>
-    </div>
-    <div class="testimonial-card">
-      <div class="t-quote">"Finally something that doesn't require me to be a tech person. The WhatsApp messages are sent automatically, I just see the recovered payments."</div>
-      <div class="t-author"><div class="t-avatar">D</div><div><div class="t-name">David R.</div><div class="t-role">CrossFit Box Owner</div></div></div>
-    </div>
-    <div class="testimonial-card">
-      <div class="t-quote">"I tried to email members myself when payments failed. Nobody replied. WhatsApp is completely different — they respond in minutes."</div>
-      <div class="t-author"><div class="t-avatar">S</div><div><div class="t-name">Sofia B.</div><div class="t-role">Boutique Pilates Studio</div></div></div>
+<!-- FOUNDER STORY -->
+<section>
+  <div class="section" style="text-align:center;">
+    <span class="section-label reveal">Our story</span>
+    <h2 class="section-h2 reveal">Why we built this</h2>
+
+    <div class="founder-card reveal">
+      <blockquote>
+        "We built GymOS after watching independent gym owners lose thousands every year to expired cards and ignored emails — money they'd already earned, just quietly disappearing.
+        <br><br>
+        We're a small team opening our beta to the first 5 gyms. Setup is fully hands-on, pricing is low, and if it doesn't recover more than it costs in month one, you pay nothing."
+      </blockquote>
+      <div class="founder-sig">— Hira & the GymOS team</div>
     </div>
   </div>
 </section>
+
+<div class="divider"></div>
 
 <!-- PRICING -->
-<section class="pricing" id="pricing">
-  <div class="container">
-    <div class="pricing-header">
-      <div class="section-label reveal">Pricing</div>
-      <h2 class="section-title reveal">Pays for itself in<br>the first recovery.</h2>
-      <p class="section-sub reveal" style="margin:0 auto">One failed payment recovered covers three months of GymOS. The rest is pure gain.</p>
-    </div>
-    <div class="pricing-card reveal">
-      <div class="pricing-badge">Beta offer</div>
-      <div class="pricing-trial"><span>Free</span> for 30 days</div>
-      <div class="pricing-then">No card required to start. Then:</div>
-      <div class="pricing-price"><sup>€</sup>99</div>
-      <div class="pricing-period">per month, cancel anytime</div>
-      <div class="pricing-features">
-        <div class="pricing-feature"><span class="check">✓</span> Unlimited failed payment recovery</div>
-        <div class="pricing-feature"><span class="check">✓</span> WhatsApp messages sent automatically</div>
-        <div class="pricing-feature"><span class="check">✓</span> 10-minute setup, we do everything</div>
-        <div class="pricing-feature"><span class="check">✓</span> See every message sent and every euro recovered</div>
-        <div class="pricing-feature"><span class="check">✓</span> Already compliant with new EU rules (Aug 2026)</div>
-        <div class="pricing-feature"><span class="check">✓</span> Direct support from the founders</div>
+<section id="pricing">
+  <div class="section" style="text-align:center;">
+    <span class="section-label reveal">Pricing</span>
+    <h2 class="section-h2 reveal">Simple. One plan.</h2>
+
+    <div class="pricing-wrap reveal">
+      <div class="pricing-card">
+        <div class="pricing-badge">Beta offer — 5 spots</div>
+        <div class="pricing-big">Free for 30 days</div>
+        <div class="pricing-sub">No card required to start.</div>
+        <div class="pricing-price">
+          Then <strong id="pricing-amount">€99/month</strong>, cancel anytime.
+        </div>
+
+        <ul class="features-list">
+          <li><span class="check">✓</span> Unlimited payment recovery</li>
+          <li><span class="check">✓</span> WhatsApp automation</li>
+          <li><span class="check">✓</span> 10-minute setup, we do it for you</li>
+          <li><span class="check">✓</span> Full message log</li>
+          <li><span class="check">✓</span> EU AI Act compliant</li>
+          <li><span class="check">✓</span> Direct founder support</li>
+        </ul>
+
+        <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" rel="noopener" class="btn-primary" style="width:100%;justify-content:center;padding:0.85rem 1.5rem;font-size:1rem;">
+          Start your free 30 days →
+        </a>
       </div>
-      <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" class="btn-primary" style="display:block;text-align:center">Start your free 30 days →</a>
     </div>
   </div>
 </section>
 
 <!-- FINAL CTA -->
-<section class="final-cta">
-  <div class="final-cta-glow"></div>
-  <h2>Your next failed payment<br>is being recovered <span style="color:#5b9dff">right now.</span></h2>
-  <p>Join the gyms that stopped chasing payments and started recovering them automatically.</p>
-  <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" class="btn-primary" style="font-size:18px;padding:20px 48px">Start Managing Smarter →</a>
-</section>
+<div class="final-cta reveal">
+  <p>Your next failed payment<br><strong>is being recovered right now.</strong></p>
+  <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" rel="noopener" class="btn-primary" style="font-size:1rem;padding:0.85rem 2rem;">
+    Start Managing Smarter →
+  </a>
+</div>
 
 <!-- FOOTER -->
 <footer>
-  <p>© 2026 GymOS · Built by Meraki · <a href="#" onclick="copyEmail(this);return false;" style="color:var(--gray-dim);text-decoration:none;border-bottom:1px dotted var(--gray-dim)">gymostool@gmail.com</a></p>
+  © 2026 GymOS · Built by Meraki · gymostool@gmail.com
 </footer>
 
 <script>
-// Scroll reveal
-const reveals = document.querySelectorAll('.reveal');
+// ── CONSTANTS ──
+const STRIPE_URL = 'https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00';
+
+// ── CURRENCY DETECTION ──
+let detectedCurrency = { sym: '€', code: 'EUR', monthly: 99 };
+
+const currencyMap = {
+  GB: { flag: '🇬🇧', sym: '£',  code: 'GBP', monthly: 85,  label: 'GBP' },
+  CA: { flag: '🇨🇦', sym: '$',  code: 'CAD', monthly: 130, label: 'CAD' },
+  US: { flag: '🇺🇸', sym: '$',  code: 'USD', monthly: 110, label: 'USD' },
+};
+
+const euCountries = ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE'];
+
+async function detectCurrency() {
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    const data = await res.json();
+    const cc = data.country_code;
+
+    if (currencyMap[cc]) {
+      detectedCurrency = currencyMap[cc];
+      const info = currencyMap[cc];
+      document.getElementById('currency-banner').textContent =
+        `${info.flag} Showing prices in ${info.label} based on your location.`;
+    } else if (euCountries.includes(cc)) {
+      detectedCurrency = { flag: '🇪🇺', sym: '€', code: 'EUR', monthly: 99, label: 'EUR' };
+      document.getElementById('currency-banner').textContent =
+        '🇪🇺 Showing prices in EUR based on your location.';
+    } else {
+      document.getElementById('currency-banner').textContent =
+        '🌍 Showing prices in EUR.';
+    }
+  } catch (e) {
+    document.getElementById('currency-banner').textContent =
+      '🌍 Showing prices in EUR.';
+  }
+
+  updateAllPrices();
+}
+
+function updateAllPrices() {
+  const { sym, monthly } = detectedCurrency;
+  document.getElementById('pricing-amount').textContent = `${sym}${monthly}/month`;
+  updateCalc();
+}
+
+detectCurrency();
+
+// ── ROI CALCULATOR ──
+function fmt(n) {
+  const { sym } = detectedCurrency;
+  return sym + Math.round(n).toLocaleString();
+}
+
+function animateNum(el, newText) {
+  el.style.transform = 'scale(1.05)';
+  el.style.transition = 'transform 0.15s ease';
+  el.textContent = newText;
+  setTimeout(() => {
+    el.style.transform = 'scale(1)';
+  }, 150);
+}
+
+function updateCalc() {
+  const members = parseInt(document.getElementById('slider-members').value);
+  const fee = parseInt(document.getElementById('slider-fee').value);
+  const rate = parseFloat(document.getElementById('slider-rate').value);
+  const { sym, monthly: cost } = detectedCurrency;
+
+  document.getElementById('val-members').textContent = members.toLocaleString();
+  document.getElementById('val-fee').textContent = sym + fee;
+  document.getElementById('val-rate').textContent = rate + '%';
+
+  const lostPerMonth = members * fee * (rate / 100);
+  const recovered = lostPerMonth * 0.78;
+  const net = recovered - cost;
+  const netYear = net * 12;
+
+  animateNum(document.getElementById('res-lost'), fmt(lostPerMonth) + '/mo');
+  animateNum(document.getElementById('res-recovered'), fmt(recovered) + '/mo');
+  animateNum(document.getElementById('res-cost'), fmt(cost) + '/mo');
+  animateNum(document.getElementById('res-net'), fmt(net) + '/mo');
+  document.getElementById('res-year-label').textContent = fmt(netYear) + ' per year';
+}
+
+// Init
+updateCalc();
+
+// ── PAYMENT STORY ANIMATION ──
+const storyLines = [
+  { type: 'entry', time: '22:17', text: 'Card declined', cls: 'story-red' },
+  { type: 'sub', text: 'Stripe · invoice.payment_failed', cls: 'story-dim' },
+  { type: 'sep' },
+  { type: 'entry', time: '22:18', text: 'GymOS noticed.', cls: 'story-blue' },
+  { type: 'sep' },
+  { type: 'entry', time: '23:17', text: 'WhatsApp sent:', cls: '' },
+  { type: 'sub', text: '"Hi John, your membership payment didn\'t', cls: 'story-indent' },
+  { type: 'sub', text: ' go through. Update your card here."', cls: 'story-indent' },
+  { type: 'sep' },
+  { type: 'entry', time: '23:22', text: '✓ Card updated.', cls: 'story-green' },
+  { type: 'entry', time: '', text: '✓ €69 recovered.', cls: 'story-green' },
+  { type: 'entry', time: '', text: '✓ Membership stays active.', cls: 'story-green' },
+];
+
+const container = document.getElementById('payment-story');
+let storyTimeout = null;
+
+function buildStoryDOM() {
+  container.innerHTML = '';
+  storyLines.forEach((line, i) => {
+    if (line.type === 'sep') {
+      const el = document.createElement('span');
+      el.className = 'story-sep';
+      el.dataset.idx = i;
+      container.appendChild(el);
+    } else {
+      const el = document.createElement('span');
+      el.className = 'story-line';
+      el.dataset.idx = i;
+      if (line.type === 'entry') {
+        el.innerHTML = `<span class="story-time">${line.time}</span><span class="${line.cls}">${line.text}</span>`;
+      } else {
+        el.className = `story-line ${line.cls}`;
+        el.textContent = line.text;
+      }
+      container.appendChild(el);
+    }
+  });
+}
+
+function runStory() {
+  buildStoryDOM();
+  const els = container.querySelectorAll('[data-idx]');
+  let delay = 0;
+
+  els.forEach((el, i) => {
+    const t = setTimeout(() => {
+      el.classList.add('visible');
+    }, delay);
+    delay += el.classList.contains('story-sep') ? 300 : 380;
+  });
+
+  // Loop after all lines + pause
+  storyTimeout = setTimeout(() => {
+    runStory();
+  }, delay + 2400);
+}
+
+runStory();
+
+// ── TIMELINE ──
+function toggleTimeline(item) {
+  const isActive = item.classList.contains('active');
+  document.querySelectorAll('.timeline-item').forEach(i => i.classList.remove('active'));
+  if (!isActive) item.classList.add('active');
+}
+
+// Open first by default
+document.querySelector('.timeline-item')?.classList.add('active');
+
+// ── SCROLL REVEAL ──
 const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry, i) => {
+  entries.forEach(entry => {
     if (entry.isIntersecting) {
-      setTimeout(() => entry.target.classList.add('visible'), i * 80);
-      observer.unobserve(entry.target);
+      entry.target.classList.add('in-view');
     }
   });
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-reveals.forEach(el => observer.observe(el));
 
-// Animated counters
-const counters = document.querySelectorAll('[data-target]');
-const counterObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (!entry.isIntersecting) return;
-    const el = entry.target;
-    const target = +el.dataset.target;
-    const suffix = el.dataset.suffix || '';
-    const prefix = el.dataset.prefix || '';
-    const duration = 1800;
-    const start = performance.now();
-    function update(now) {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const current = Math.round(eased * target);
-      el.textContent = prefix + (target > 999 ? '€' + current.toLocaleString() : current) + suffix;
-      if (progress < 1) requestAnimationFrame(update);
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── HAMBURGER ──
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('mobile-menu').classList.toggle('open');
+});
+
+function closeMobileMenu() {
+  document.getElementById('mobile-menu').classList.remove('open');
+}
+
+// ── SMOOTH SCROLL ──
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) {
+      e.preventDefault();
+      const offset = 80;
+      const top = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
     }
-    requestAnimationFrame(update);
-    counterObserver.unobserve(el);
   });
-}, { threshold: 0.5 });
-counters.forEach(el => counterObserver.observe(el));
-
-// Hero recovery feed — steps through the actual product story on a loop
-const feedSteps = document.querySelectorAll('#recovery-feed .recovery-step');
-let feedIndex = 0;
-function tickFeed() {
-  feedSteps.forEach((step, i) => {
-    step.classList.toggle('done', i < feedIndex);
-    step.classList.toggle('active', i === feedIndex);
-  });
-  feedIndex++;
-  if (feedIndex > feedSteps.length) feedIndex = 0;
-}
-if (feedSteps.length) {
-  tickFeed();
-  setInterval(tickFeed, 1500);
-}
-
-// Copy-to-clipboard for email contact (no mailto:)
-let toastTimer;
-function showToast(msg) {
-  let toast = document.getElementById('email-toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'email-toast';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = msg;
-  toast.classList.add('visible');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('visible'), 2600);
-}
-function copyEmail() {
-  const email = 'gymostool@gmail.com';
-  if (navigator.clipboard) navigator.clipboard.writeText(email);
-  showToast('Copied ' + email + ' — drop us a line to get started');
-}
+});
 </script>
 </body>
 </html>
