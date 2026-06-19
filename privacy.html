@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — GymOS</title>
+<meta name="description" content="GymOS Privacy Policy. How we collect, use and protect your data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F7F5F0; --text: #0E0E0E; --mid: #4A4540; --light: #8A857E;
+    --accent: #C4622D; --border: #D8D3CB; --white: #FFFFFF;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'Inter', system-ui, sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(247,245,240,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-family: var(--serif); font-size: 1.25rem; color: var(--text); text-decoration: none; }
+  .nav-home { font-size: 0.85rem; color: var(--light); text-decoration: none; transition: color 0.2s; }
+  .nav-home:hover { color: var(--text); }
+
+  .doc-wrap { max-width: 720px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+
+  .doc-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+  h1 { font-family: var(--serif); font-size: clamp(2rem, 4vw, 2.8rem); letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 0.5rem; }
+  .doc-date { font-size: 0.82rem; color: var(--light); margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+
+  h2 { font-family: var(--serif); font-size: 1.3rem; color: var(--text); margin: 2.5rem 0 0.75rem; letter-spacing: -0.01em; }
+  h3 { font-size: 0.92rem; font-weight: 600; color: var(--text); margin: 1.5rem 0 0.4rem; }
+  p { color: var(--mid); font-size: 0.93rem; margin-bottom: 0.9rem; }
+  ul { color: var(--mid); font-size: 0.93rem; margin: 0.5rem 0 0.9rem 1.25rem; }
+  li { margin-bottom: 0.35rem; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .highlight-box {
+    background: var(--white); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0;
+  }
+  .highlight-box p { margin: 0; font-size: 0.88rem; }
+
+  footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-size: 0.8rem; color: var(--light); }
+  footer a { color: var(--light); }
+
+  #ai-disclosure { scroll-margin-top: 80px; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">GymOS</a>
+  <a href="/" class="nav-home">← Back to site</a>
+</nav>
+
+<div class="doc-wrap">
+  <div class="doc-label">Legal</div>
+  <h1>Privacy Policy</h1>
+  <p class="doc-date">Last updated: 19 June 2026 · Applies to gymostool.xyz and associated services</p>
+
+  <div class="highlight-box">
+    <p><strong>The short version:</strong> We collect the minimum data needed to run GymOS — gym details, member phone numbers from Stripe, and message logs. We never sell your data. We never touch your money. You can delete everything by emailing us.</p>
+  </div>
+
+  <h2>1. Who we are</h2>
+  <p>GymOS is a payment recovery service operated by Meraki ("we", "us", "our"). Our contact email is <a href="mailto:gymostool@gmail.com">gymostool@gmail.com</a>.</p>
+  <p>For the purposes of EU data protection law, we act as a data controller for the personal data of gym owners and as a data processor for the personal data of gym members (processed on behalf of the gym owner, who is the controller).</p>
+
+  <h2>2. What data we collect</h2>
+
+  <h3>From gym owners (our direct customers)</h3>
+  <ul>
+    <li>Name, business email, WhatsApp number</li>
+    <li>Gym name, country, number of members</li>
+    <li>Stripe Account ID (used only to connect our service to your payments)</li>
+    <li>Payment records (managed via Stripe; we do not store card data)</li>
+  </ul>
+
+  <h3>From gym members (via your Stripe integration)</h3>
+  <ul>
+    <li>Phone number (to send WhatsApp recovery messages)</li>
+    <li>Invoice status (to determine whether to send a message)</li>
+    <li>We do not collect names, email addresses or card details of gym members unless passed to us explicitly</li>
+  </ul>
+
+  <h3>Usage and technical data</h3>
+  <ul>
+    <li>IP address and browser type (standard web server logs, retained for 30 days)</li>
+    <li>Pages visited on gymostool.xyz</li>
+    <li>Message delivery logs (timestamp, recipient number, delivery status)</li>
+  </ul>
+
+  <h2>3. How we use your data</h2>
+  <ul>
+    <li><strong>To deliver the service:</strong> detecting failed payments, sending WhatsApp recovery messages, logging outcomes</li>
+    <li><strong>To communicate with you:</strong> onboarding, support, billing notifications</li>
+    <li><strong>To improve the service:</strong> aggregated, anonymised usage analysis</li>
+    <li><strong>To comply with legal obligations:</strong> including the EU AI Act (Article 50 transparency), GDPR, and tax/financial regulations</li>
+  </ul>
+
+  <h2>4. Legal basis for processing (GDPR)</h2>
+  <ul>
+    <li><strong>Contract performance</strong> — processing necessary to deliver the GymOS service you signed up for (Art. 6(1)(b))</li>
+    <li><strong>Legitimate interests</strong> — service improvement, fraud prevention (Art. 6(1)(f))</li>
+    <li><strong>Legal obligation</strong> — compliance with applicable EU law (Art. 6(1)(c))</li>
+  </ul>
+
+  <h2>5. Who we share data with</h2>
+  <p>We do not sell personal data. We share data only with:</p>
+  <ul>
+    <li><strong>Stripe</strong> — payment processing and invoice status checks (<a href="https://stripe.com/privacy" target="_blank">Stripe Privacy Policy</a>)</li>
+    <li><strong>Meta / WhatsApp Business API</strong> — delivery of recovery messages (<a href="https://www.whatsapp.com/legal/privacy-policy" target="_blank">Meta Privacy Policy</a>)</li>
+    <li><strong>Supabase</strong> — database hosting (EU servers) (<a href="https://supabase.com/privacy" target="_blank">Supabase Privacy Policy</a>)</li>
+    <li><strong>Render</strong> — application hosting (<a href="https://render.com/privacy" target="_blank">Render Privacy Policy</a>)</li>
+    <li><strong>Google</strong> — form submissions and analytics (<a href="https://policies.google.com/privacy" target="_blank">Google Privacy Policy</a>)</li>
+  </ul>
+
+  <h2>6. Data retention</h2>
+  <ul>
+    <li>Active customer data: retained while your subscription is active</li>
+    <li>Message logs: 12 months from send date</li>
+    <li>Billing records: 7 years (legal requirement)</li>
+    <li>After account closure: all personal data deleted within 30 days, except billing records</li>
+  </ul>
+
+  <h2>7. Your rights (GDPR)</h2>
+  <p>If you are in the EU or UK, you have the right to:</p>
+  <ul>
+    <li><strong>Access</strong> your personal data</li>
+    <li><strong>Correct</strong> inaccurate data</li>
+    <li><strong>Delete</strong> your data ("right to be forgotten")</li>
+    <li><strong>Restrict</strong> or <strong>object</strong> to processing</li>
+    <li><strong>Portability</strong> — receive your data in a portable format</li>
+    <li><strong>Withdraw consent</strong> at any time (where processing is based on consent)</li>
+  </ul>
+  <p>To exercise any of these rights, email <a href="mailto:gymostool@gmail.com">gymostool@gmail.com</a>. We will respond within 30 days. You also have the right to lodge a complaint with your national data protection authority (in Spain: <a href="https://www.aepd.es" target="_blank">AEPD</a>).</p>
+
+  <h2>8. Cookies</h2>
+  <p>We use minimal cookies. See our <a href="/cookies.html">Cookie Policy</a> for details.</p>
+
+  <h2>9. Security</h2>
+  <p>All data is transmitted over TLS/HTTPS. We do not store Stripe secret keys, card numbers or CVVs. Access to our database is protected by Row Level Security. We conduct regular security reviews.</p>
+
+  <h2>10. International transfers</h2>
+  <p>Our hosting is in the EU (Frankfurt). Where data is processed outside the EU (e.g. via Meta's servers), we rely on Standard Contractual Clauses or adequacy decisions.</p>
+
+  <h2>11. Children</h2>
+  <p>GymOS is a B2B service intended for businesses. We do not knowingly collect data from individuals under 18.</p>
+
+  <h2 id="ai-disclosure">12. AI disclosure (EU AI Act, Article 50)</h2>
+  <p>GymOS uses automated systems to detect failed payments and generate WhatsApp messages. In compliance with the EU AI Act (effective 2 August 2026), every message sent to gym members by our system includes the disclosure: <em>"This is an automated message from [Gym Name]."</em></p>
+  <p>Our system is classified as <strong>low-risk</strong> under the EU AI Act. It performs transactional notifications only and is not used for hiring, biometric identification, or any high-risk purpose.</p>
+  <p>We do not use gym member data to train AI models.</p>
+
+  <h2>13. Changes to this policy</h2>
+  <p>We will notify active customers by email of any material changes. The date at the top of this page always reflects the most recent revision.</p>
+
+  <h2>14. Contact</h2>
+  <p>Questions about this policy: <a href="mailto:gymostool@gmail.com">gymostool@gmail.com</a></p>
+</div>
+
+<footer>
+  <a href="/">GymOS</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/cookies.html">Cookies</a> · gymostool@gmail.com
+</footer>
+</body>
+</html>
