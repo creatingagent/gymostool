@@ -920,6 +920,581 @@
   }
 </style>
 </head>
+<style>
+/* ── MODAL OVERLAY ── */
+#intake-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(14,14,14,0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+ 
+#intake-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+ 
+#intake-panel {
+  background: #F7F5F0;
+  border: 1px solid #D8D3CB;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2.5rem;
+  position: relative;
+  transform: translateY(18px) scale(0.97);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+}
+ 
+#intake-overlay.open #intake-panel {
+  transform: translateY(0) scale(1);
+}
+ 
+/* close button */
+#intake-close {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #8A857E;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.25rem;
+  transition: color 0.15s;
+}
+#intake-close:hover { color: #0E0E0E; }
+ 
+/* ── STEPS ── */
+.intake-step { display: none; }
+.intake-step.active { display: block; }
+ 
+/* progress dots */
+.intake-progress {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 2rem;
+}
+.intake-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #D8D3CB;
+  transition: background 0.25s, width 0.25s;
+}
+.intake-dot.active {
+  background: #C4622D;
+  width: 20px;
+  border-radius: 3px;
+}
+ 
+/* headings */
+.intake-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #C4622D;
+  margin-bottom: 0.4rem;
+}
+.intake-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 1.7rem;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: #0E0E0E;
+  margin-bottom: 0.4rem;
+}
+.intake-sub {
+  font-size: 0.85rem;
+  color: #6B6560;
+  margin-bottom: 1.75rem;
+  line-height: 1.5;
+}
+ 
+/* fields */
+.intake-field {
+  margin-bottom: 1.1rem;
+}
+.intake-field label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0E0E0E;
+  margin-bottom: 0.35rem;
+}
+.intake-field input,
+.intake-field select {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  border: 1.5px solid #D8D3CB;
+  border-radius: 8px;
+  background: #FFFFFF;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.9rem;
+  color: #0E0E0E;
+  outline: none;
+  transition: border-color 0.2s;
+  appearance: none;
+}
+.intake-field input:focus,
+.intake-field select:focus {
+  border-color: #C4622D;
+}
+.intake-field input.error { border-color: #B91C1C; }
+ 
+.intake-hint {
+  font-size: 0.75rem;
+  color: #8A857E;
+  margin-top: 0.3rem;
+}
+ 
+.intake-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+ 
+/* buttons */
+.intake-btn-row {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1.75rem;
+  align-items: center;
+}
+.intake-next {
+  flex: 1;
+  background: #0E0E0E;
+  color: #F7F5F0;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.intake-next:hover { background: #C4622D; transform: translateY(-1px); }
+.intake-back {
+  background: none;
+  border: 1.5px solid #D8D3CB;
+  color: #6B6560;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.intake-back:hover { border-color: #6B6560; color: #0E0E0E; }
+ 
+/* ── REVIEW STEP ── */
+.review-block {
+  background: #FFFFFF;
+  border: 1px solid #D8D3CB;
+  border-radius: 10px;
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 1rem;
+}
+.review-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #EDE9E1;
+  font-size: 0.85rem;
+}
+.review-row:last-child { border-bottom: none; }
+.review-key { color: #6B6560; }
+.review-val { color: #0E0E0E; font-weight: 500; }
+ 
+.intake-legal {
+  font-size: 0.75rem;
+  color: #8A857E;
+  line-height: 1.5;
+  margin-top: 1rem;
+}
+.intake-legal a { color: #C4622D; text-decoration: none; }
+ 
+/* ── SUCCESS ── */
+#intake-success { text-align: center; padding: 1rem 0; }
+.success-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #D1FAE5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 1.6rem;
+}
+.success-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 1.8rem;
+  color: #0E0E0E;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+.success-body {
+  font-size: 0.9rem;
+  color: #6B6560;
+  line-height: 1.6;
+  max-width: 340px;
+  margin: 0 auto 1.5rem;
+}
+.success-stripe-btn {
+  display: inline-block;
+  background: #C4622D;
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.success-stripe-btn:hover { background: #A8501F; }
+.success-note {
+  font-size: 0.78rem;
+  color: #8A857E;
+  margin-top: 0.75rem;
+}
+ 
+@media (max-width: 500px) {
+  #intake-panel { padding: 1.75rem 1.25rem; }
+  .intake-row { grid-template-columns: 1fr; }
+}
+</style>
+ 
+<!-- MODAL HTML -->
+<div id="intake-overlay" role="dialog" aria-modal="true" aria-labelledby="intake-heading">
+  <div id="intake-panel">
+    <button id="intake-close" aria-label="Close">✕</button>
+ 
+    <!-- STEP 1: Contact -->
+    <div class="intake-step active" id="step1">
+      <div class="intake-progress">
+        <div class="intake-dot active"></div>
+        <div class="intake-dot"></div>
+        <div class="intake-dot"></div>
+      </div>
+      <div class="intake-eyebrow">Step 1 of 3</div>
+      <h2 class="intake-title" id="intake-heading">Tell us about your gym</h2>
+      <p class="intake-sub">Takes 90 seconds. We use this to set up your account before your trial starts.</p>
+ 
+      <div class="intake-field">
+        <label for="f-gym">Gym name</label>
+        <input type="text" id="f-gym" placeholder="CrossFit Barcelona" autocomplete="organization">
+      </div>
+      <div class="intake-row">
+        <div class="intake-field">
+          <label for="f-name">Owner name</label>
+          <input type="text" id="f-name" placeholder="Marc" autocomplete="given-name">
+        </div>
+        <div class="intake-field">
+          <label for="f-surname">Surname</label>
+          <input type="text" id="f-surname" placeholder="García" autocomplete="family-name">
+        </div>
+      </div>
+      <div class="intake-field">
+        <label for="f-email">Business email</label>
+        <input type="email" id="f-email" placeholder="marc@crossfitbarcelona.com" autocomplete="email">
+      </div>
+      <div class="intake-field">
+        <label for="f-phone">WhatsApp number</label>
+        <input type="tel" id="f-phone" placeholder="+34 612 345 678" autocomplete="tel">
+        <p class="intake-hint">We'll contact you here to confirm setup.</p>
+      </div>
+ 
+      <div class="intake-btn-row">
+        <button class="intake-next" onclick="intakeNext(1)">Continue →</button>
+      </div>
+    </div>
+ 
+    <!-- STEP 2: Business details -->
+    <div class="intake-step" id="step2">
+      <div class="intake-progress">
+        <div class="intake-dot"></div>
+        <div class="intake-dot active"></div>
+        <div class="intake-dot"></div>
+      </div>
+      <div class="intake-eyebrow">Step 2 of 3</div>
+      <h2 class="intake-title">Your Stripe details</h2>
+      <p class="intake-sub">We need this to connect GymOS to your payments. We only ever read — never touch your money.</p>
+ 
+      <div class="intake-row">
+        <div class="intake-field">
+          <label for="f-members">Active members</label>
+          <input type="number" id="f-members" placeholder="150" min="1" max="10000">
+        </div>
+        <div class="intake-field">
+          <label for="f-country">Country</label>
+          <select id="f-country">
+            <option value="">Select…</option>
+            <option value="ES">Spain</option>
+            <option value="GB">United Kingdom</option>
+            <option value="CA">Canada</option>
+            <option value="US">United States</option>
+            <option value="DE">Germany</option>
+            <option value="FR">France</option>
+            <option value="IT">Italy</option>
+            <option value="NL">Netherlands</option>
+            <option value="AU">Australia</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+ 
+      <div class="intake-field">
+        <label for="f-stripe">Stripe Account ID</label>
+        <input type="text" id="f-stripe" placeholder="acct_1A2B3C4D5E6F7G8H">
+        <p class="intake-hint">Find it in Stripe → Settings → Account details. Starts with "acct_".</p>
+      </div>
+ 
+      <div class="intake-field">
+        <label for="f-software">Gym software (optional)</label>
+        <select id="f-software">
+          <option value="">Select if applicable…</option>
+          <option>Glofox</option>
+          <option>Mindbody</option>
+          <option>Pike13</option>
+          <option>Wodify</option>
+          <option>TeamUp</option>
+          <option>Other / Direct Stripe</option>
+        </select>
+        <p class="intake-hint">Helps us configure the integration correctly.</p>
+      </div>
+ 
+      <div class="intake-btn-row">
+        <button class="intake-back" onclick="intakeBack(2)">← Back</button>
+        <button class="intake-next" onclick="intakeNext(2)">Review →</button>
+      </div>
+    </div>
+ 
+    <!-- STEP 3: Review + submit -->
+    <div class="intake-step" id="step3">
+      <div class="intake-progress">
+        <div class="intake-dot"></div>
+        <div class="intake-dot"></div>
+        <div class="intake-dot active"></div>
+      </div>
+      <div class="intake-eyebrow">Step 3 of 3</div>
+      <h2 class="intake-title">Confirm your details</h2>
+      <p class="intake-sub">Check everything looks right, then we'll take you to Stripe to start your free 30 days.</p>
+ 
+      <div class="review-block" id="reviewBlock">
+        <!-- filled by JS -->
+      </div>
+ 
+      <p class="intake-legal">
+        By continuing you agree to our
+        <a href="/terms.html" target="_blank">Terms of Service</a> and
+        <a href="/privacy.html" target="_blank">Privacy Policy</a>.
+        Your Stripe Account ID is stored securely and used only to connect GymOS to your payments.
+        We never store card data. Compliant with EU AI Act transparency requirements (August 2026).
+      </p>
+ 
+      <div class="intake-btn-row">
+        <button class="intake-back" onclick="intakeBack(3)">← Back</button>
+        <button class="intake-next" id="submitBtn" onclick="intakeSubmit()">Start free trial →</button>
+      </div>
+    </div>
+ 
+    <!-- SUCCESS -->
+    <div id="intake-success" style="display:none">
+      <div class="success-icon">✓</div>
+      <div class="success-title">You're in.</div>
+      <p class="success-body">
+        We've received your details and will contact you on WhatsApp within 24 hours to complete setup.<br><br>
+        Now start your 30-day free trial on Stripe — no card charged until day 31.
+      </p>
+      <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" class="success-stripe-btn">
+        Activate free trial on Stripe →
+      </a>
+      <p class="success-note">No card required. Cancel anytime before day 30.</p>
+    </div>
+ 
+  </div>
+</div>
+ 
+<script>
+(function() {
+  // ── OPEN / CLOSE ──
+  const overlay = document.getElementById('intake-overlay');
+ 
+  function openIntake(e) {
+    if (e) e.preventDefault();
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // reset to step 1
+    showStep(1);
+    document.getElementById('intake-success').style.display = 'none';
+    document.querySelectorAll('.intake-step').forEach(s => s.style.display = '');
+  }
+ 
+  function closeIntake() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+ 
+  document.getElementById('intake-close').addEventListener('click', closeIntake);
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closeIntake();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeIntake();
+  });
+ 
+  // ── INTERCEPT ALL STRIPE CTAS ──
+  // Intercept links to Stripe checkout
+  document.addEventListener('click', function(e) {
+    const a = e.target.closest('a[href*="buy.stripe.com"]');
+    if (a) { openIntake(e); }
+  }, true);
+ 
+  // ── STEP LOGIC ──
+  window.showStep = function(n) {
+    document.querySelectorAll('.intake-step').forEach((s, i) => {
+      s.classList.toggle('active', i + 1 === n);
+    });
+    // update dots
+    document.querySelectorAll('.intake-dot').forEach((d, i) => {
+      d.classList.toggle('active', i + 1 === n);
+    });
+  };
+ 
+  window.intakeNext = function(fromStep) {
+    if (fromStep === 1) {
+      const gym = document.getElementById('f-gym').value.trim();
+      const name = document.getElementById('f-name').value.trim();
+      const email = document.getElementById('f-email').value.trim();
+      const phone = document.getElementById('f-phone').value.trim();
+      if (!gym || !name || !email || !phone) {
+        alert('Please fill in all fields before continuing.');
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+      showStep(2);
+    } else if (fromStep === 2) {
+      const members = document.getElementById('f-members').value.trim();
+      const country = document.getElementById('f-country').value;
+      const stripe = document.getElementById('f-stripe').value.trim();
+      if (!members || !country || !stripe) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+      if (!stripe.startsWith('acct_') && stripe.length > 0) {
+        if (!confirm('Your Stripe Account ID usually starts with "acct_". Continue anyway?')) return;
+      }
+      // populate review
+      buildReview();
+      showStep(3);
+    }
+  };
+ 
+  window.intakeBack = function(fromStep) {
+    showStep(fromStep - 1);
+  };
+ 
+  function buildReview() {
+    const data = collectData();
+    const block = document.getElementById('reviewBlock');
+    const rows = [
+      ['Gym', data.gym],
+      ['Owner', data.name + ' ' + data.surname],
+      ['Email', data.email],
+      ['WhatsApp', data.phone],
+      ['Members', data.members],
+      ['Country', data.country],
+      ['Stripe ID', data.stripe || '—'],
+      ['Software', data.software || '—'],
+    ];
+    block.innerHTML = rows.map(([k, v]) =>
+      `<div class="review-row"><span class="review-key">${k}</span><span class="review-val">${v || '—'}</span></div>`
+    ).join('');
+  }
+ 
+  function collectData() {
+    return {
+      gym:      document.getElementById('f-gym').value.trim(),
+      name:     document.getElementById('f-name').value.trim(),
+      surname:  document.getElementById('f-surname').value.trim(),
+      email:    document.getElementById('f-email').value.trim(),
+      phone:    document.getElementById('f-phone').value.trim(),
+      members:  document.getElementById('f-members').value.trim(),
+      country:  document.getElementById('f-country').value,
+      stripe:   document.getElementById('f-stripe').value.trim(),
+      software: document.getElementById('f-software').value,
+    };
+  }
+ 
+  window.intakeSubmit = function() {
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+ 
+    const data = collectData();
+ 
+    // ── GOOGLE FORM SUBMISSION ──
+
+    const FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSf23QWkB1KJ9L3nhquLz_yi1t2C2oE9ah6KUuVxnhKKb6JauQ/formResponse';
+    const body = new URLSearchParams({
+      'entry.GYM':      data.gym,
+      'entry.NAME':     data.name + ' ' + data.surname,
+      'entry.EMAIL':    data.email,
+      'entry.PHONE':    data.phone,
+      'entry.MEMBERS':  data.members,
+      'entry.COUNTRY':  data.country,
+      'entry.STRIPE':   data.stripe,
+      'entry.SOFTWARE': data.software,
+    });
+ 
+    // Fire and forget — we don't need the response
+    fetch(FORM_ACTION, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString(),
+    }).catch(() => {
+      // Silently ignore — user still gets to Stripe regardless
+    });
+ 
+    // Also write to localStorage as backup
+    try {
+      const existing = JSON.parse(localStorage.getItem('gymos_leads') || '[]');
+      existing.push({ ...data, ts: new Date().toISOString() });
+      localStorage.setItem('gymos_leads', JSON.stringify(existing));
+    } catch(e) {}
+ 
+    // Show success after brief pause
+    setTimeout(() => {
+      document.querySelectorAll('.intake-step').forEach(s => s.style.display = 'none');
+      document.getElementById('intake-success').style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Start free trial →';
+    }, 900);
+  };
+})();
+</script>
+ 
 <body>
 
 <!-- NAV -->
