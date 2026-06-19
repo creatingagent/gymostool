@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — GymOS</title>
+<meta name="description" content="GymOS Terms of Service. Read our terms before using the platform.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F7F5F0; --text: #0E0E0E; --mid: #4A4540; --light: #8A857E;
+    --accent: #C4622D; --border: #D8D3CB; --white: #FFFFFF;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'Inter', system-ui, sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(247,245,240,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-family: var(--serif); font-size: 1.25rem; color: var(--text); text-decoration: none; }
+  .nav-home { font-size: 0.85rem; color: var(--light); text-decoration: none; transition: color 0.2s; }
+  .nav-home:hover { color: var(--text); }
+
+  .doc-wrap { max-width: 720px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+
+  .doc-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+  h1 { font-family: var(--serif); font-size: clamp(2rem, 4vw, 2.8rem); letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 0.5rem; }
+  .doc-date { font-size: 0.82rem; color: var(--light); margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+
+  h2 { font-family: var(--serif); font-size: 1.3rem; color: var(--text); margin: 2.5rem 0 0.75rem; letter-spacing: -0.01em; }
+  h3 { font-size: 0.92rem; font-weight: 600; color: var(--text); margin: 1.5rem 0 0.4rem; }
+  p { color: var(--mid); font-size: 0.93rem; margin-bottom: 0.9rem; }
+  ul { color: var(--mid); font-size: 0.93rem; margin: 0.5rem 0 0.9rem 1.25rem; }
+  li { margin-bottom: 0.35rem; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .highlight-box {
+    background: var(--white); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0;
+  }
+  .highlight-box p { margin: 0; font-size: 0.88rem; }
+
+  footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-size: 0.8rem; color: var(--light); }
+  footer a { color: var(--light); }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">GymOS</a>
+  <a href="/" class="nav-home">← Back to site</a>
+</nav>
+
+<div class="doc-wrap">
+  <div class="doc-label">Legal</div>
+  <h1>Terms of Service</h1>
+  <p class="doc-date">Last updated: 19 June 2026 · Applies to gymostool.xyz and associated services</p>
+
+  <div class="highlight-box">
+    <p><strong>The short version:</strong> Use GymOS to recover your gym's failed payments. Pay your subscription, don't misuse the service, and we'll keep everything running. Cancel anytime.</p>
+  </div>
+
+  <h2>1. Acceptance of terms</h2>
+  <p>By accessing or using GymOS ("the Service"), operated by Meraki ("we", "us", "our"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.</p>
+
+  <h2>2. Description of service</h2>
+  <p>GymOS is a SaaS product that connects to your Stripe account to detect failed membership payments and automatically sends WhatsApp messages to your gym members to help recover those payments. The Service does not initiate, move, or otherwise handle funds on your behalf.</p>
+
+  <h2>3. Eligibility</h2>
+  <p>You must be at least 18 years old and authorised to act on behalf of the gym or fitness business you register. By using the Service, you confirm this.</p>
+
+  <h2>4. Account and setup</h2>
+  <p>You are responsible for providing accurate account information during onboarding, including your Stripe Account ID. You agree to notify us promptly at <a href="mailto:gymostool@gmail.com">gymostool@gmail.com</a> if your Stripe account changes or your membership management software changes.</p>
+
+  <h2>5. Subscription and payment</h2>
+  <h3>Free trial</h3>
+  <p>New accounts receive a 30-day free trial. No charge is made during this period. After the trial, your subscription begins at the rate applicable at signup.</p>
+  <h3>Billing</h3>
+  <p>Subscriptions are billed monthly or annually via Stripe. All prices are displayed including applicable taxes where required. By providing payment details you authorise us to charge your card on a recurring basis.</p>
+  <h3>Cancellation</h3>
+  <p>You may cancel at any time from your Stripe billing portal or by emailing us. Cancellation takes effect at the end of your current billing period. No refunds are issued for partial periods.</p>
+  <h3>Refunds</h3>
+  <p>If GymOS does not recover more than it costs in your first paid month, contact us within 30 days and we will issue a full refund for that month, no questions asked.</p>
+
+  <h2>6. Acceptable use</h2>
+  <p>You agree not to:</p>
+  <ul>
+    <li>Use the Service to send unsolicited, deceptive, or harassing messages</li>
+    <li>Attempt to access, scrape, or reverse-engineer the Service</li>
+    <li>Use the Service for any purpose other than legitimate payment recovery for your gym business</li>
+    <li>Share access credentials with third parties outside your organisation</li>
+    <li>Resell or white-label the Service without our written consent</li>
+  </ul>
+
+  <h2>7. Data and privacy</h2>
+  <p>Your use of the Service is also governed by our <a href="/privacy.html">Privacy Policy</a>. By using GymOS you confirm that you have the legal right to share your gym members' phone numbers with us for the purpose of payment recovery communications.</p>
+
+  <h2>8. Third-party services</h2>
+  <p>GymOS integrates with Stripe, Meta WhatsApp Business API, and other third-party services. Your use of those services is governed by their respective terms. We are not responsible for their availability or conduct.</p>
+
+  <h2>9. Intellectual property</h2>
+  <p>All software, code, design, and content comprising GymOS is owned by Meraki. You receive a limited, non-exclusive, non-transferable licence to use the Service during your active subscription. Nothing in these terms transfers any IP rights to you.</p>
+
+  <h2>10. Disclaimers</h2>
+  <p>The Service is provided "as is." We make no guarantee that GymOS will recover any specific amount of revenue. Payment recovery rates depend on many factors outside our control, including your members' willingness to update their card details and Stripe's own retry behaviour.</p>
+
+  <h2>11. Limitation of liability</h2>
+  <p>To the maximum extent permitted by law, Meraki's total liability to you for any claim arising out of these terms or your use of the Service is limited to the amount you paid us in the three months preceding the claim. We are not liable for indirect, consequential, or incidental damages.</p>
+
+  <h2>12. EU consumer rights</h2>
+  <p>If you are an EU consumer (not a business), you may have additional statutory rights, including a 14-day right of withdrawal from digital services. This right is waived if you have already actively used the Service during the trial period.</p>
+
+  <h2>13. Governing law</h2>
+  <p>These terms are governed by the laws of Spain. Disputes shall be subject to the exclusive jurisdiction of the courts of Barcelona, unless mandatory consumer law in your country requires otherwise.</p>
+
+  <h2>14. Changes to terms</h2>
+  <p>We may update these terms at any time. We will notify active subscribers by email at least 14 days before material changes take effect. Continued use after that date constitutes acceptance.</p>
+
+  <h2>15. Contact</h2>
+  <p>Questions about these terms: <a href="mailto:gymostool@gmail.com">gymostool@gmail.com</a></p>
+</div>
+
+<footer>
+  <a href="/">GymOS</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/cookies.html">Cookies</a> · gymostool@gmail.com
+</footer>
+</body>
+</html>
