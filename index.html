@@ -9,6 +9,8 @@
 <meta property="og:image" content="https://gymostool.xyz/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>GymOS</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1216,9 +1218,9 @@
         <input type="email" id="f-email" placeholder="marc@crossfitbarcelona.com" autocomplete="email">
       </div>
       <div class="intake-field">
-        <label for="f-phone">WhatsApp number</label>
+        <label for="f-phone">Phone number <span style="color:#8A857E;font-weight:400;">(optional)</span></label>
         <input type="tel" id="f-phone" placeholder="+34 612 345 678" autocomplete="tel">
-        <p class="intake-hint">We'll contact you here to confirm setup.</p>
+        <p class="intake-hint">We'll email you to confirm setup — this is just a backup contact.</p>
       </div>
  
       <div class="intake-btn-row">
@@ -1302,6 +1304,7 @@
       </div>
  
       <p class="intake-legal">
+        A card is required on the next screen to activate your 30-day trial — you won't be charged until day 31.
         By continuing you agree to our
         <a href="/terms.html" target="_blank">Terms of Service</a> and
         <a href="/privacy.html" target="_blank">Privacy Policy</a>.
@@ -1320,13 +1323,13 @@
       <div class="success-icon">✓</div>
       <div class="success-title">You're in.</div>
       <p class="success-body">
-        We've received your details and will contact you on WhatsApp within 24 hours to complete setup.<br><br>
-        Now start your 30-day free trial on Stripe — no card charged until day 31.
+        We've received your details and will email you within 24 hours to complete setup.<br><br>
+        Now start your 30-day free trial on Stripe — your card won't be charged until day 31.
       </p>
       <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" class="success-stripe-btn">
         Activate free trial on Stripe →
       </a>
-      <p class="success-note">No card required. Cancel anytime before day 30.</p>
+      <p class="success-note">Card required to activate. Cancel anytime before day 31 and you won't be charged.</p>
     </div>
  
   </div>
@@ -1361,10 +1364,13 @@
   });
  
   // ── INTERCEPT ALL STRIPE CTAS ──
-  // Intercept links to Stripe checkout
+  // Intercept links to Stripe checkout — but never intercept the Stripe
+  // button that lives INSIDE this same modal's success step. That one has
+  // already been through the form; it must be allowed to actually open
+  // Stripe instead of reopening the modal at step 1.
   document.addEventListener('click', function(e) {
     const a = e.target.closest('a[href*="buy.stripe.com"]');
-    if (a) { openIntake(e); }
+    if (a && !overlay.contains(a)) { openIntake(e); }
   }, true);
  
   // ── STEP LOGIC ──
@@ -1384,8 +1390,8 @@
       const name = document.getElementById('f-name').value.trim();
       const email = document.getElementById('f-email').value.trim();
       const phone = document.getElementById('f-phone').value.trim();
-      if (!gym || !name || !email || !phone) {
-        alert('Please fill in all fields before continuing.');
+      if (!gym || !name || !email) {
+        alert('Please fill in gym name, your name and email before continuing.');
         return;
       }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -1421,7 +1427,7 @@
       ['Gym', data.gym],
       ['Owner', data.name + ' ' + data.surname],
       ['Email', data.email],
-      ['WhatsApp', data.phone],
+      ['Phone', data.phone || '—'],
       ['Members', data.members],
       ['Country', data.country],
       ['Stripe ID', data.stripe || '—'],
@@ -1526,6 +1532,7 @@
       <a href="#how-it-works" class="btn-ghost">See how it works</a>
     </div>
     <p class="hero-note">30 days free · Beta pricing · First 5 gyms only</p>
+    <p class="hero-note" style="margin-top:0.4rem;">🔒 Checkout secured by Stripe · We never see or store your card numbers · GDPR-aligned data handling</p>
   </div>
   <div class="hero-right reveal" style="transition-delay:0.12s">
     <div class="payment-stage" id="paymentStage">
@@ -1656,7 +1663,7 @@
         </div>
         <div class="slider-group">
           <label>
-            Estimated failure rate
+            Assumed failed payment rate
             <span class="slider-val" id="valRate">4%</span>
           </label>
           <input type="range" id="slRate" min="1" max="10" value="4" step="0.5">
@@ -1735,8 +1742,8 @@
           <path d="M6 28h24"/>
           <path d="M9 32h18"/>
         </svg>
-        <div class="why-name">Already EU compliant</div>
-        <div class="why-text">Every message includes the required AI disclosure under the EU AI Act (August 2026). You're covered before most gyms even know it applies.</div>
+        <div class="why-name">EU transparency ready</div>
+        <div class="why-text">Every message includes the AI disclosure required by the EU AI Act's August 2026 transparency rules. One less thing for you to think about.</div>
       </div>
     </div>
   </div>
@@ -1764,7 +1771,7 @@
   <div class="section-inner">
     <span class="section-label reveal">Pricing</span>
     <h2 class="section-title reveal">Simple. One plan.</h2>
-    <p class="section-sub reveal">First 5 gyms get 30 days completely free. No card required to start.</p>
+    <p class="section-sub reveal">First 5 gyms get 30 days completely free. Card required to start — you're not charged until day 31.</p>
 
     <div class="pricing-toggle reveal">
       <span class="toggle-label active" id="labelMonthly">Monthly</span>
@@ -1776,7 +1783,7 @@
     <div class="pricing-card reveal">
       <div class="pricing-badge">Beta offer — 5 spots</div>
       <div class="pricing-trial">Free for 30 days</div>
-      <div class="pricing-then">No card required to start. Then</div>
+      <div class="pricing-then">Card required to start. No charge until day 31. Then</div>
       <div class="pricing-price-display" id="priceDisplay">€99/month</div>
       <div class="pricing-cancel" id="priceNote">Cancel anytime.</div>
 
@@ -1799,7 +1806,7 @@
         </li>
         <li>
           <svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          EU AI Act compliant
+          EU transparency ready
         </li>
         <li>
           <svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1810,7 +1817,7 @@
       <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" class="pricing-cta" id="pricingCta">
         Start your free 30 days →
       </a>
-      <p class="pricing-note">No credit card required. Cancel anytime.</p>
+      <p class="pricing-note">Card required. Not charged until day 31. Cancel anytime.</p>
     </div>
   </div>
 </section>
