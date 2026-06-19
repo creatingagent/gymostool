@@ -3,944 +3,639 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<meta name="description" content="GymOS automatically recovers failed gym membership payments via WhatsApp. Free for 30 days, then €99/month. Setup in an instant.">
-
-<meta property="og:title" content="GymOS">
+<meta name="description" content="GymOS automatically recovers failed gym membership payments via WhatsApp. Free for 30 days, then €99/month. Setup in 10 minutes.">
+<meta property="og:title" content="GymOS — Recover failed gym payments automatically">
 <meta property="og:description" content="When a member's card fails, GymOS sends a WhatsApp. They update in minutes. You find out when the money lands.">
 <meta property="og:image" content="https://gymostool.xyz/og.png">
-
 <meta name="twitter:card" content="summary_large_image">
-
-<title>GymOS</title>
-
+<link rel="canonical" href="https://gymostool.xyz/">
+<title>GymOS — Recover failed gym payments automatically</title>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
 <style>
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #F7F5F0;
-    --bg-card: #EDEAE3;
-    --bg-dark: #0E0E0E;
-    --text: #0E0E0E;
-    --text-mid: #4A4540;
-    --text-light: #8A857E;
-    --accent: #C4622D;
-    --accent-light: #E8D5C8;
-    --border: #D8D3CB;
-    --white: #FFFFFF;
-    --serif: 'Instrument Serif', Georgia, serif;
-    --sans: 'Inter', system-ui, sans-serif;
-    --radius: 12px;
-    --radius-sm: 8px;
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* ─── NAV ─── */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(247, 245, 240, 0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .nav-logo {
-    font-family: var(--serif);
-    font-size: 1.25rem;
-    color: var(--text);
-    text-decoration: none;
-    letter-spacing: -0.02em;
-  }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    list-style: none;
-  }
-
-  .nav-links a {
-    color: var(--text-mid);
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-
-  .nav-links a:hover { color: var(--text); }
-
-  .nav-cta {
-    background: var(--text);
-    color: var(--white) !important;
-    padding: 0.5rem 1.1rem;
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-    font-size: 0.875rem !important;
-    transition: background 0.2s, transform 0.1s !important;
-  }
-
-  .nav-cta:hover {
-    background: var(--accent) !important;
-    color: var(--white) !important;
-    transform: translateY(-1px);
-  }
-
-  .currency-badge {
-    font-size: 0.78rem;
-    color: var(--text-light);
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    padding: 0.2rem 0.75rem;
-    margin-left: 0.5rem;
-  }
-
-  /* ─── HERO ─── */
-  .hero {
-    max-width: 1140px;
-    margin: 0 auto;
-    padding: 5rem 2rem 4rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: center;
-  }
-
-  .hero-headline {
-    font-family: var(--serif);
-    font-size: clamp(2.4rem, 4vw, 3.6rem);
-    line-height: 1.08;
-    letter-spacing: -0.03em;
-    color: var(--text);
-    margin-bottom: 1.25rem;
-  }
-
-  .hero-headline em {
-    font-style: italic;
-    color: var(--accent);
-  }
-
-  .hero-sub {
-    font-size: 1.05rem;
-    color: var(--text-mid);
-    line-height: 1.7;
-    margin-bottom: 2rem;
-    max-width: 420px;
-  }
-
-  .hero-actions {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: var(--text);
-    color: var(--white);
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    font-size: 0.9rem;
-    text-decoration: none;
-    transition: background 0.2s, transform 0.15s;
-  }
-
-  .btn-primary:hover {
-    background: var(--accent);
-    transform: translateY(-2px);
-  }
-
-  .btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    color: var(--text-mid);
-    padding: 0.75rem 1.5rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-    font-size: 0.9rem;
-    text-decoration: none;
-    background: transparent;
-    transition: border-color 0.2s, color 0.2s, transform 0.15s;
-    cursor: pointer;
-  }
-
-  .btn-ghost:hover {
-    border-color: var(--text-mid);
-    color: var(--text);
-    transform: translateY(-2px);
-  }
-
-  .hero-note {
-    margin-top: 1rem;
-    font-size: 0.8rem;
-    color: var(--text-light);
-  }
-
-  /* ─── PAYMENT ANIMATION ─── */
-  .payment-stage {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    min-height: 360px;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .payment-stage::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent), #E8956D);
-  }
-
-  .stage-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-light);
-    margin-bottom: 0.25rem;
-  }
-
-  .anim-line {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-  }
-
-  .anim-line.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .anim-time {
-    font-family: 'Courier New', monospace;
-    font-size: 0.7rem;
-    color: var(--text-light);
-    min-width: 42px;
-    padding-top: 2px;
-  }
-
-  .anim-content {
-    flex: 1;
-  }
-
-  .anim-title {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1.3;
-  }
-
-  .anim-sub {
-    font-size: 0.75rem;
-    color: var(--text-light);
-    margin-top: 1px;
-  }
-
-  .anim-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    flex-shrink: 0;
-  }
-
-  .icon-red { background: #FEE2E2; color: #B91C1C; }
-  .icon-amber { background: #FEF3C7; color: #92400E; }
-  .icon-green { background: #D1FAE5; color: #065F46; }
-  .icon-blue { background: #DBEAFE; color: #1E40AF; }
-
-  .anim-divider {
-    width: 1px;
-    height: 16px;
-    background: var(--border);
-    margin-left: 13px;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .anim-divider.visible { opacity: 1; }
-
-  .recovered-banner {
-    margin-top: auto;
-    background: #D1FAE5;
-    border: 1px solid #A7F3D0;
-    border-radius: var(--radius-sm);
-    padding: 0.75rem 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    opacity: 0;
-    transform: translateY(6px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  }
-
-  .recovered-banner.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .recovered-label { font-size: 0.78rem; color: #065F46; font-weight: 500; }
-  .recovered-amount { font-size: 1.1rem; font-weight: 700; color: #065F46; font-family: var(--serif); }
-
-  /* ─── SECTION BASE ─── */
-  section { padding: 5rem 2rem; }
-
-  .section-inner {
-    max-width: 1140px;
-    margin: 0 auto;
-  }
-
-  .section-label {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 1rem;
-  }
-
-  .section-title {
-    font-family: var(--serif);
-    font-size: clamp(1.8rem, 3vw, 2.6rem);
-    line-height: 1.12;
-    letter-spacing: -0.025em;
-    color: var(--text);
-    margin-bottom: 1rem;
-  }
-
-  .section-sub {
-    font-size: 1rem;
-    color: var(--text-mid);
-    max-width: 520px;
-    line-height: 1.7;
-  }
-
-  /* ─── HOW IT WORKS ─── */
-  #how-it-works { background: var(--white); }
-
-  .flow-diagram {
-    margin-top: 3rem;
-    display: flex;
-    align-items: flex-start;
-    gap: 0;
-    overflow-x: auto;
-    padding-bottom: 1rem;
-  }
-
-  .flow-step {
-    flex: 1;
-    min-width: 160px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    position: relative;
-  }
-
-  .flow-step:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    top: 20px;
-    right: -30%;
-    width: 60%;
-    height: 1px;
-    background: linear-gradient(90deg, var(--border), transparent);
-  }
-
-  .flow-num {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 1.5px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text-mid);
-    margin-bottom: 1rem;
-    position: relative;
-    z-index: 1;
-    transition: background 0.3s, border-color 0.3s, color 0.3s;
-  }
-
-  .flow-step:hover .flow-num,
-  .flow-step.active .flow-num {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-  }
-
-  .flow-name {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 0.4rem;
-  }
-
-  .flow-desc {
-    font-size: 0.78rem;
-    color: var(--text-light);
-    line-height: 1.5;
-    max-width: 140px;
-  }
-
-  .flow-detail {
-    margin-top: 3rem;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 2rem;
-    min-height: 120px;
-    display: none;
-    animation: fadeIn 0.3s ease;
-  }
-
-  .flow-detail.active {
-    display: block;
-  }
-
-  .flow-detail-title {
-    font-family: var(--serif);
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .flow-detail-text {
-    color: var(--text-mid);
-    font-size: 0.93rem;
-    line-height: 1.7;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ─── QUOTE ─── */
-  .quote-section {
-    background: var(--bg-dark);
-    text-align: center;
-    padding: 5rem 2rem;
-  }
-
-  .big-quote {
-    font-family: var(--serif);
-    font-size: clamp(1.6rem, 3vw, 2.5rem);
-    color: var(--white);
-    line-height: 1.25;
-    max-width: 720px;
-    margin: 0 auto;
-    font-style: italic;
-    letter-spacing: -0.02em;
-  }
-
-  .big-quote span { color: var(--accent); font-style: normal; }
-
-  /* ─── ROI CALCULATOR ─── */
-  #calculator { background: var(--bg); }
-
-  .calc-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    margin-top: 3rem;
-    align-items: start;
-  }
-
-  .calc-sliders { display: flex; flex-direction: column; gap: 2rem; }
-
-  .slider-group label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.88rem;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 0.6rem;
-  }
-
-  .slider-val {
-    font-family: var(--serif);
-    font-size: 1rem;
-    color: var(--accent);
-  }
-
-  input[type=range] {
-    width: 100%;
-    height: 4px;
-    border-radius: 100px;
-    background: var(--border);
-    outline: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-  }
-
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--text);
-    border: 2px solid white;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  input[type=range]::-webkit-slider-thumb:hover {
-    background: var(--accent);
-  }
-
-  .calc-results {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-  }
-
-  .result-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 1.25rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .result-row:last-child { border-bottom: none; padding-bottom: 0; }
-
-  .result-label { font-size: 0.85rem; color: var(--text-mid); }
-
-  .result-num {
-    font-family: var(--serif);
-    font-size: 1.4rem;
-    font-weight: 400;
-    color: var(--text);
-    transition: color 0.2s;
-  }
-
-  .result-row.highlight .result-num {
-    font-size: 1.8rem;
-    color: var(--accent);
-  }
-
-  .result-row.highlight .result-label {
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  /* ─── WHY IT WORKS ─── */
-  #why { background: var(--white); }
-
-  .why-grid {
-    margin-top: 3rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .why-card {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    transition: border-color 0.2s, transform 0.2s;
-  }
-
-  .why-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-3px);
-  }
-
-  .why-icon {
-    width: 36px;
-    height: 36px;
-    margin-bottom: 1rem;
-    opacity: 0.8;
-  }
-
-  .why-name {
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 0.4rem;
-  }
-
-  .why-text {
-    font-size: 0.82rem;
-    color: var(--text-mid);
-    line-height: 1.6;
-  }
-
-  /* ─── FOUNDER ─── */
-  #story { background: var(--bg); }
-
-  .founder-card {
-    max-width: 680px;
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 2.5rem;
-    border-left: 3px solid var(--accent);
-  }
-
-  .founder-text {
-    font-size: 1rem;
-    color: var(--text-mid);
-    line-height: 1.75;
-    margin-bottom: 1.25rem;
-  }
-
-  .founder-sig {
-    font-family: var(--serif);
-    font-size: 1rem;
-    color: var(--text);
-    font-style: italic;
-  }
-
-  /* ─── PRICING ─── */
-  #pricing { background: var(--bg-dark); color: var(--white); }
-
-  #pricing .section-label { color: var(--accent); }
-  #pricing .section-title { color: var(--white); }
-  #pricing .section-sub { color: #9CA3AF; }
-
-  .pricing-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin: 2rem 0;
-  }
-
-  .toggle-label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #9CA3AF;
-    cursor: pointer;
-    transition: color 0.2s;
-  }
-
-  .toggle-label.active { color: var(--white); }
-
-  .toggle-switch {
-    width: 44px;
-    height: 24px;
-    background: #333;
-    border-radius: 100px;
-    position: relative;
-    cursor: pointer;
-    transition: background 0.3s;
-    border: none;
-    outline: none;
-  }
-
-  .toggle-switch.annual { background: var(--accent); }
-
-  .toggle-switch::after {
-    content: '';
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    background: white;
-    border-radius: 50%;
-    top: 3px;
-    left: 3px;
-    transition: transform 0.3s;
-  }
-
-  .toggle-switch.annual::after { transform: translateX(20px); }
-
-  .save-badge {
-    background: var(--accent);
-    color: white;
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 0.15rem 0.5rem;
-    border-radius: 100px;
-  }
-
-  .pricing-card {
-    background: #1A1A1A;
-    border: 1px solid #2E2E2E;
-    border-radius: 16px;
-    padding: 2.5rem;
-    max-width: 480px;
-  }
-
-  .pricing-badge {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--accent);
-    background: rgba(196,98,45,0.12);
-    border: 1px solid rgba(196,98,45,0.3);
-    padding: 0.25rem 0.6rem;
-    border-radius: 100px;
-    margin-bottom: 1.5rem;
-  }
-
-  .pricing-trial {
-    font-family: var(--serif);
-    font-size: 2.4rem;
-    color: var(--white);
-    margin-bottom: 0.25rem;
-    letter-spacing: -0.02em;
-  }
-
-  .pricing-then {
-    font-size: 0.88rem;
-    color: #9CA3AF;
-    margin-bottom: 0.25rem;
-  }
-
-  .pricing-price-display {
-    font-family: var(--serif);
-    font-size: 2rem;
-    color: var(--accent);
-    margin-bottom: 0.25rem;
-    transition: all 0.3s;
-  }
-
-  .pricing-cancel {
-    font-size: 0.8rem;
-    color: #6B7280;
-    margin-bottom: 1.75rem;
-  }
-
-  .pricing-features {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    margin-bottom: 2rem;
-  }
-
-  .pricing-features li {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    font-size: 0.88rem;
-    color: #D1D5DB;
-  }
-
-  .check-icon {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    color: var(--accent);
-  }
-
-  .pricing-cta {
-    display: block;
-    text-align: center;
-    background: var(--accent);
-    color: white;
-    padding: 0.875rem;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    font-size: 0.95rem;
-    text-decoration: none;
-    transition: background 0.2s, transform 0.15s;
-  }
-
-  .pricing-cta:hover {
-    background: #A8501F;
-    transform: translateY(-2px);
-  }
-
-  .pricing-note {
-    font-size: 0.78rem;
-    color: #6B7280;
-    text-align: center;
-    margin-top: 0.75rem;
-  }
-
-  /* ─── FINAL CTA ─── */
-  .final-cta {
-    background: var(--bg);
-    text-align: center;
-    padding: 6rem 2rem;
-    border-top: 1px solid var(--border);
-  }
-
-  .final-cta-title {
-    font-family: var(--serif);
-    font-size: clamp(2rem, 4vw, 3.2rem);
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    margin-bottom: 1.5rem;
-    max-width: 640px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .final-cta-title em { color: var(--accent); font-style: italic; }
-
-  /* ─── FOOTER ─── */
-  footer {
-    background: var(--bg-dark);
-    color: #9CA3AF;
-    padding: 3rem 2rem 2rem;
-  }
-
-  .footer-inner {
-    max-width: 1140px;
-    margin: 0 auto;
-  }
-
-  .footer-top {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 1fr;
-    gap: 3rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid #1E1E1E;
-    margin-bottom: 2rem;
-  }
-
-  .footer-brand-name {
-    font-family: var(--serif);
-    font-size: 1.25rem;
-    color: var(--white);
-    margin-bottom: 0.5rem;
-  }
-
-  .footer-brand-desc {
-    font-size: 0.82rem;
-    line-height: 1.6;
-    max-width: 240px;
-  }
-
-  .footer-col-title {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #6B7280;
-    margin-bottom: 1rem;
-  }
-
-  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
-
-  .footer-col a {
-    color: #9CA3AF;
-    text-decoration: none;
-    font-size: 0.85rem;
-    transition: color 0.2s;
-  }
-
-  .footer-col a:hover { color: var(--white); }
-
-  .footer-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
-  }
-
-  .footer-email { color: #6B7280; }
-
-  /* ─── SCROLL REVEAL ─── */
-  .reveal {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-
-  .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* ─── MOBILE ─── */
-  @media (max-width: 768px) {
-    .hero {
-      grid-template-columns: 1fr;
-      padding: 3rem 1.25rem;
-      gap: 2.5rem;
-    }
-
-    .calc-grid { grid-template-columns: 1fr; }
-
-    .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
-
-    .flow-diagram { flex-direction: column; gap: 1rem; }
-
-    .flow-step::after { display: none; }
-
-    .nav-links { display: none; }
-
-    section { padding: 3.5rem 1.25rem; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
-</style>
-</head>
-<style>
-/* ── MODAL OVERLAY ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── LIGHT MODE (default) ── */
+:root {
+  --bg:          #F7F5F0;
+  --bg-card:     #EDEAE3;
+  --bg-elevated: #FFFFFF;
+  --bg-border:   #D8D3CB;
+  --text:        #0E0E0E;
+  --text-mid:    #4A4540;
+  --text-light:  #8A857E;
+  --accent:      #C4622D;
+  --accent-dim:  rgba(196,98,45,0.1);
+  --accent-bdr:  rgba(196,98,45,0.3);
+  --green:       #065F46;
+  --green-bg:    #D1FAE5;
+  --green-text:  #065F46;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans:  'Inter', system-ui, sans-serif;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+/* ── DARK MODE ── */
+[data-theme="dark"] {
+  --bg:          #111110;
+  --bg-card:     #1A1917;
+  --bg-elevated: #211F1C;
+  --bg-border:   #2C2926;
+  --text:        #F0EDE8;
+  --text-mid:    #A09890;
+  --text-light:  #6B6560;
+  --accent:      #D4693A;
+  --accent-dim:  rgba(212,105,58,0.12);
+  --accent-bdr:  rgba(212,105,58,0.3);
+  --green:       #2D6A4F;
+  --green-bg:    #1A3D2D;
+  --green-text:  #6EE7B7;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══ NAV ═══ */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--bg-border);
+  padding: 0 2rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--text-mid);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+  background: var(--accent) !important;
+  color: #fff !important;
+  padding: 0.5rem 1.1rem !important;
+  border-radius: var(--radius-sm) !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  transition: background 0.2s, transform 0.1s !important;
+  text-decoration: none !important;
+}
+.nav-cta:hover {
+  background: #B8521E !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ═══ HERO ═══ */
+.hero {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 5.5rem 2rem 4.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+.hero-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+.hero-headline {
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 4vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 1.25rem;
+}
+.hero-headline em { font-style: italic; color: var(--accent); }
+.hero-sub {
+  font-size: 1rem;
+  color: var(--text-mid);
+  line-height: 1.75;
+  margin-bottom: 2rem;
+  max-width: 420px;
+}
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: #B8521E; transform: translateY(-2px); }
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-mid);
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--bg-border);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-decoration: none;
+  background: transparent;
+  transition: border-color 0.2s, color 0.2s, transform 0.15s;
+  cursor: pointer;
+}
+.btn-ghost:hover { border-color: var(--text-mid); color: var(--text); transform: translateY(-2px); }
+.hero-trust {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+/* ═══ PAYMENT ANIMATION CARD ═══ */
+.payment-stage {
+  background: var(--bg-card);
+  border: 1px solid var(--bg-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 24px 48px rgba(0,0,0,0.4);
+}
+.payment-stage::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), #E8956D, transparent);
+}
+.stage-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-bottom: 0.25rem;
+}
+.anim-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.anim-line.visible { opacity: 1; transform: translateY(0); }
+.anim-time {
+  font-family: 'Courier New', monospace;
+  font-size: 0.68rem;
+  color: var(--text-light);
+  min-width: 42px;
+  padding-top: 3px;
+}
+.anim-content { flex: 1; }
+.anim-title { font-size: 0.82rem; font-weight: 600; color: var(--text); line-height: 1.3; }
+.anim-sub { font-size: 0.73rem; color: var(--text-light); margin-top: 2px; }
+.anim-icon {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem;
+  flex-shrink: 0;
+  font-style: normal;
+}
+.icon-red   { background: #FEE2E2; color: #B91C1C; }
+.icon-amber { background: #FEF3C7; color: #92400E; }
+.icon-blue  { background: #DBEAFE; color: #1D4ED8; }
+.icon-green { background: #D1FAE5; color: #065F46; }
+[data-theme="dark"] .icon-red   { background: rgba(185,28,28,0.2);  color: #F87171; }
+[data-theme="dark"] .icon-amber { background: rgba(146,64,14,0.25); color: #FCD34D; }
+[data-theme="dark"] .icon-blue  { background: rgba(30,64,175,0.25); color: #93C5FD; }
+[data-theme="dark"] .icon-green { background: rgba(6,78,59,0.3);    color: #6EE7B7; }
+.anim-divider {
+  width: 1px; height: 14px;
+  background: var(--bg-border);
+  margin-left: 13px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.anim-divider.visible { opacity: 1; }
+.recovered-banner {
+  margin-top: auto;
+  background: var(--green-bg);
+  border: 1px solid rgba(110,231,183,0.2);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.recovered-banner.visible { opacity: 1; transform: translateY(0); }
+.recovered-label { font-size: 0.78rem; color: var(--green-text); font-weight: 500; }
+.recovered-amount { font-size: 1.1rem; font-weight: 700; color: var(--green-text); font-family: var(--serif); }
+
+/* ═══ SECTION BASE ═══ */
+section { padding: 5rem 2rem; }
+.section-inner { max-width: 1140px; margin: 0 auto; }
+.section-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+.section-title {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+.section-sub {
+  font-size: 0.97rem;
+  color: var(--text-mid);
+  max-width: 520px;
+  line-height: 1.7;
+}
+
+/* ═══ HOW IT WORKS ═══ */
+#how-it-works { background: var(--bg-card); border-top: 1px solid var(--bg-border); }
+.flow-diagram {
+  margin-top: 3rem;
+  display: flex;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+.flow-step {
+  flex: 1;
+  min-width: 155px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  padding: 0 0.5rem;
+}
+.flow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 19px;
+  right: -28%;
+  width: 56%;
+  height: 1px;
+  background: linear-gradient(90deg, var(--bg-border), transparent);
+}
+.flow-num {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--bg-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 600;
+  color: var(--text-mid);
+  margin-bottom: 0.85rem;
+  position: relative; z-index: 1;
+  transition: background 0.25s, border-color 0.25s, color 0.25s;
+}
+.flow-step:hover .flow-num, .flow-step.active .flow-num {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.flow-name { font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 0.35rem; }
+.flow-desc { font-size: 0.75rem; color: var(--text-light); line-height: 1.5; max-width: 130px; }
+.flow-detail {
+  margin-top: 2.5rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--bg-border);
+  border-radius: var(--radius);
+  padding: 1.75rem 2rem;
+  display: none;
+  animation: fadeSlide 0.3s ease;
+}
+.flow-detail.active { display: block; }
+.flow-detail-title { font-family: var(--serif); font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text); }
+.flow-detail-text { color: var(--text-mid); font-size: 0.9rem; line-height: 1.7; }
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ QUOTE ═══ */
+.quote-section {
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--bg-border);
+  border-bottom: 1px solid var(--bg-border);
+  text-align: center;
+  padding: 5rem 2rem;
+}
+.big-quote {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  color: var(--text);
+  line-height: 1.25;
+  max-width: 680px;
+  margin: 0 auto;
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+.big-quote span { color: var(--accent); font-style: normal; }
+
+/* ═══ ROI CALCULATOR ═══ */
+#calculator { background: var(--bg); }
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin-top: 3rem;
+  align-items: start;
+}
+.calc-sliders { display: flex; flex-direction: column; gap: 2rem; }
+.slider-group label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.6rem;
+}
+.slider-val { font-family: var(--serif); font-size: 1rem; color: var(--accent); }
+input[type=range] {
+  width: 100%; height: 3px;
+  border-radius: 100px;
+  background: var(--bg-border);
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg-card);
+  box-shadow: 0 0 0 1px var(--accent);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.calc-results {
+  background: var(--bg-card);
+  border: 1px solid var(--bg-border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--bg-border);
+}
+.result-row:last-child { border-bottom: none; padding-bottom: 0; }
+.result-label { font-size: 0.83rem; color: var(--text-mid); }
+.result-num { font-family: var(--serif); font-size: 1.35rem; color: var(--text); }
+.result-row.highlight .result-num { font-size: 1.75rem; color: var(--accent); }
+.result-row.highlight .result-label { font-weight: 600; color: var(--text); }
+
+/* ═══ WHY IT WORKS ═══ */
+#why { background: var(--bg-card); border-top: 1px solid var(--bg-border); }
+.why-grid {
+  margin-top: 3rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1.25rem;
+}
+.why-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--bg-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.why-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+.why-icon { width: 32px; height: 32px; margin-bottom: 0.85rem; color: var(--accent); opacity: 0.9; }
+.why-name { font-size: 0.88rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+.why-text { font-size: 0.8rem; color: var(--text-mid); line-height: 1.6; }
+
+/* ═══ FOUNDER ═══ */
+#story { background: var(--bg); }
+.founder-card {
+  max-width: 660px;
+  background: var(--bg-card);
+  border: 1px solid var(--bg-border);
+  border-radius: var(--radius);
+  padding: 2.25rem 2.5rem;
+  border-left: 3px solid var(--accent);
+}
+.founder-text { font-size: 0.97rem; color: var(--text-mid); line-height: 1.75; margin-bottom: 1.1rem; }
+.founder-sig { font-family: var(--serif); font-size: 0.97rem; color: var(--text-mid); font-style: italic; }
+
+/* ═══ PRICING ═══ */
+#pricing { background: var(--bg-card); border-top: 1px solid var(--bg-border); }
+#pricing .section-sub { color: var(--text-mid); }
+.pricing-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 2rem 0;
+}
+.toggle-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.toggle-label.active { color: var(--text); }
+.toggle-switch {
+  width: 44px; height: 24px;
+  background: var(--bg-border);
+  border-radius: 100px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s;
+  border: none; outline: none;
+  flex-shrink: 0;
+}
+.toggle-switch.annual { background: var(--accent); }
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  background: white;
+  border-radius: 50%;
+  top: 3px; left: 3px;
+  transition: transform 0.3s;
+}
+.toggle-switch.annual::after { transform: translateX(20px); }
+.save-badge {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent-bdr);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 100px;
+}
+.pricing-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--bg-border);
+  border-radius: 16px;
+  padding: 2.5rem;
+  max-width: 460px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 16px 40px rgba(0,0,0,0.3);
+}
+.pricing-badge {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-bdr);
+  padding: 0.25rem 0.6rem;
+  border-radius: 100px;
+  margin-bottom: 1.5rem;
+}
+.pricing-trial { font-family: var(--serif); font-size: 2.3rem; color: var(--text); margin-bottom: 0.2rem; letter-spacing: -0.02em; }
+.pricing-then { font-size: 0.85rem; color: var(--text-light); margin-bottom: 0.2rem; }
+.pricing-price-display { font-family: var(--serif); font-size: 1.9rem; color: var(--accent); margin-bottom: 0.2rem; }
+.pricing-cancel { font-size: 0.78rem; color: var(--text-light); margin-bottom: 1.75rem; }
+.pricing-features { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 2rem; }
+.pricing-features li {
+  display: flex; align-items: center; gap: 0.65rem;
+  font-size: 0.87rem; color: var(--text-mid);
+}
+.check-icon { width: 15px; height: 15px; flex-shrink: 0; color: var(--accent); }
+.pricing-cta {
+  display: block; text-align: center;
+  background: var(--accent); color: white;
+  padding: 0.875rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 0.95rem;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.pricing-cta:hover { background: #B8521E; transform: translateY(-2px); }
+.pricing-note { font-size: 0.76rem; color: var(--text-light); text-align: center; margin-top: 0.75rem; }
+
+/* ═══ FINAL CTA ═══ */
+.final-cta {
+  background: var(--bg);
+  text-align: center;
+  padding: 6rem 2rem;
+  border-top: 1px solid var(--bg-border);
+}
+.final-cta-title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  max-width: 620px;
+  margin-left: auto; margin-right: auto;
+}
+.final-cta-title em { color: var(--accent); font-style: italic; }
+
+/* ═══ FOOTER ═══ */
+footer {
+  background: var(--bg-card);
+  border-top: 1px solid var(--bg-border);
+  color: var(--text-mid);
+  padding: 3rem 2rem 2rem;
+}
+.footer-inner { max-width: 1140px; margin: 0 auto; }
+.footer-top {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--bg-border);
+  margin-bottom: 2rem;
+}
+.footer-brand-name { font-family: var(--serif); font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem; }
+.footer-brand-desc { font-size: 0.8rem; line-height: 1.6; max-width: 230px; color: var(--text-light); }
+.footer-col-title { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-light); margin-bottom: 0.9rem; }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+.footer-col a { color: var(--text-mid); text-decoration: none; font-size: 0.83rem; transition: color 0.2s; }
+.footer-col a:hover { color: var(--text); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: var(--text-light); }
+
+/* ═══ SCROLL REVEAL ═══ */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ═══ MODAL ═══ */
 #intake-overlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(14,14,14,0.72);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -949,15 +644,10 @@
   pointer-events: none;
   transition: opacity 0.25s ease;
 }
- 
-#intake-overlay.open {
-  opacity: 1;
-  pointer-events: all;
-}
- 
+#intake-overlay.open { opacity: 1; pointer-events: all; }
 #intake-panel {
-  background: #F7F5F0;
-  border: 1px solid #D8D3CB;
+  background: var(--bg-elevated);
+  border: 1px solid var(--bg-border);
   border-radius: 18px;
   width: 100%;
   max-width: 500px;
@@ -965,240 +655,222 @@
   overflow-y: auto;
   padding: 2.5rem;
   position: relative;
-  transform: translateY(18px) scale(0.97);
+  transform: translateY(16px) scale(0.97);
   transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5);
 }
- 
-#intake-overlay.open #intake-panel {
-  transform: translateY(0) scale(1);
-}
- 
-/* close button */
+#intake-overlay.open #intake-panel { transform: translateY(0) scale(1); }
 #intake-close {
-  position: absolute;
-  top: 1.1rem;
-  right: 1.25rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #8A857E;
-  font-size: 1.1rem;
-  line-height: 1;
-  padding: 0.25rem;
+  position: absolute; top: 1.1rem; right: 1.25rem;
+  background: none; border: none;
+  cursor: pointer; color: var(--text-light);
+  font-size: 1rem; line-height: 1; padding: 0.3rem;
   transition: color 0.15s;
 }
-#intake-close:hover { color: #0E0E0E; }
- 
-/* ── STEPS ── */
+#intake-close:hover { color: var(--text); }
 .intake-step { display: none; }
 .intake-step.active { display: block; }
- 
-/* progress dots */
-.intake-progress {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 2rem;
-}
+.intake-progress { display: flex; gap: 6px; margin-bottom: 2rem; }
 .intake-dot {
-  width: 6px;
-  height: 6px;
+  width: 6px; height: 6px;
   border-radius: 50%;
-  background: #D8D3CB;
+  background: var(--bg-border);
   transition: background 0.25s, width 0.25s;
 }
-.intake-dot.active {
-  background: #C4622D;
-  width: 20px;
-  border-radius: 3px;
-}
- 
-/* headings */
-.intake-eyebrow {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #C4622D;
-  margin-bottom: 0.4rem;
-}
-.intake-title {
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-size: 1.7rem;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  color: #0E0E0E;
-  margin-bottom: 0.4rem;
-}
-.intake-sub {
-  font-size: 0.85rem;
-  color: #6B6560;
-  margin-bottom: 1.75rem;
-  line-height: 1.5;
-}
- 
-/* fields */
-.intake-field {
-  margin-bottom: 1.1rem;
-}
-.intake-field label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #0E0E0E;
-  margin-bottom: 0.35rem;
-}
-.intake-field input,
-.intake-field select {
+.intake-dot.active { background: var(--accent); width: 20px; border-radius: 3px; }
+.intake-eyebrow { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem; }
+.intake-title { font-family: var(--serif); font-size: 1.65rem; letter-spacing: -0.02em; line-height: 1.15; color: var(--text); margin-bottom: 0.4rem; }
+.intake-sub { font-size: 0.84rem; color: var(--text-mid); margin-bottom: 1.75rem; line-height: 1.55; }
+.intake-field { margin-bottom: 1.05rem; }
+.intake-field label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text); margin-bottom: 0.3rem; }
+.intake-field input, .intake-field select {
   width: 100%;
   padding: 0.65rem 0.9rem;
-  border: 1.5px solid #D8D3CB;
+  border: 1.5px solid var(--bg-border);
   border-radius: 8px;
-  background: #FFFFFF;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 0.9rem;
-  color: #0E0E0E;
+  background: var(--bg-card);
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  color: var(--text);
   outline: none;
   transition: border-color 0.2s;
-  appearance: none;
+  -webkit-appearance: none;
 }
-.intake-field input:focus,
-.intake-field select:focus {
-  border-color: #C4622D;
-}
-.intake-field input.error { border-color: #B91C1C; }
- 
-.intake-hint {
-  font-size: 0.75rem;
-  color: #8A857E;
-  margin-top: 0.3rem;
-}
- 
-.intake-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-}
- 
-/* buttons */
-.intake-btn-row {
-  display: flex;
-  gap: 0.6rem;
-  margin-top: 1.75rem;
-  align-items: center;
-}
+.intake-field input::placeholder { color: var(--text-light); }
+.intake-field input:focus, .intake-field select:focus { border-color: var(--accent); }
+.intake-field select { color: var(--text); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6560' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.85rem center; padding-right: 2.2rem; }
+.intake-field select option { background: var(--bg-elevated); color: var(--text); }
+.intake-hint { font-size: 0.73rem; color: var(--text-light); margin-top: 0.3rem; }
+.intake-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+.intake-btn-row { display: flex; gap: 0.6rem; margin-top: 1.75rem; align-items: center; }
 .intake-next {
   flex: 1;
-  background: #0E0E0E;
-  color: #F7F5F0;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+  background: var(--accent); color: white;
+  border: none; padding: 0.8rem 1.5rem;
+  border-radius: 8px; font-family: var(--sans);
+  font-size: 0.9rem; font-weight: 600;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
 }
-.intake-next:hover { background: #C4622D; transform: translateY(-1px); }
+.intake-next:hover { background: #B8521E; transform: translateY(-1px); }
 .intake-back {
   background: none;
-  border: 1.5px solid #D8D3CB;
-  color: #6B6560;
+  border: 1.5px solid var(--bg-border);
+  color: var(--text-mid);
   padding: 0.8rem 1rem;
-  border-radius: 8px;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 0.88rem;
-  cursor: pointer;
+  border-radius: 8px; font-family: var(--sans);
+  font-size: 0.87rem; cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
 }
-.intake-back:hover { border-color: #6B6560; color: #0E0E0E; }
- 
-/* ── REVIEW STEP ── */
+.intake-back:hover { border-color: var(--text-mid); color: var(--text); }
 .review-block {
-  background: #FFFFFF;
-  border: 1px solid #D8D3CB;
+  background: var(--bg-card);
+  border: 1px solid var(--bg-border);
   border-radius: 10px;
-  padding: 1.25rem 1.4rem;
+  padding: 1.1rem 1.3rem;
   margin-bottom: 1rem;
 }
 .review-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: 0.35rem 0;
-  border-bottom: 1px solid #EDE9E1;
-  font-size: 0.85rem;
+  padding: 0.32rem 0;
+  border-bottom: 1px solid var(--bg-border);
+  font-size: 0.83rem;
 }
 .review-row:last-child { border-bottom: none; }
-.review-key { color: #6B6560; }
-.review-val { color: #0E0E0E; font-weight: 500; }
- 
-.intake-legal {
-  font-size: 0.75rem;
-  color: #8A857E;
-  line-height: 1.5;
-  margin-top: 1rem;
-}
-.intake-legal a { color: #C4622D; text-decoration: none; }
- 
-/* ── SUCCESS ── */
+.review-key { color: var(--text-light); }
+.review-val { color: var(--text); font-weight: 500; }
+.intake-legal { font-size: 0.73rem; color: var(--text-light); line-height: 1.55; margin-top: 1rem; }
+.intake-legal a { color: var(--accent); text-decoration: none; }
 #intake-success { text-align: center; padding: 1rem 0; }
 .success-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: #D1FAE5;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--green-bg);
+  border: 1px solid rgba(110,231,183,0.2);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 1.4rem;
+}
+.success-title { font-family: var(--serif); font-size: 1.75rem; color: var(--text); margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+.success-body { font-size: 0.88rem; color: var(--text-mid); line-height: 1.65; max-width: 340px; margin: 0 auto 1.5rem; }
+.success-stripe-btn {
+  display: inline-block;
+  background: var(--accent); color: white;
+  padding: 0.8rem 2rem; border-radius: 8px;
+  font-weight: 600; font-size: 0.9rem; text-decoration: none;
+  transition: background 0.2s;
+}
+.success-stripe-btn:hover { background: #B8521E; }
+.success-note { font-size: 0.75rem; color: var(--text-light); margin-top: 0.75rem; }
+
+/* ═══ COOKIE BANNER ═══ */
+#cookie-bar {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  z-index: 8888;
+  background: var(--bg-elevated);
+  border: 1px solid var(--bg-border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 520px;
+  width: calc(100% - 2rem);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transition: transform 0.4s cubic-bezier(0.34,1.2,0.64,1), opacity 0.4s;
+  opacity: 0;
+}
+#cookie-bar.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+#cookie-bar.hidden  { transform: translateX(-50%) translateY(120px); opacity: 0; pointer-events: none; }
+.cookie-text { font-size: 0.8rem; color: var(--text-mid); line-height: 1.5; flex: 1; }
+.cookie-text a { color: var(--accent); text-decoration: none; }
+.cookie-btns { display: flex; gap: 0.5rem; flex-shrink: 0; }
+.cookie-accept {
+  background: var(--accent); color: white;
+  border: none; padding: 0.45rem 0.9rem;
+  border-radius: 6px; font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; font-family: var(--sans);
+  transition: background 0.2s;
+}
+.cookie-accept:hover { background: #B8521E; }
+.cookie-reject {
+  background: none;
+  border: 1px solid var(--bg-border);
+  color: var(--text-mid); padding: 0.45rem 0.9rem;
+  border-radius: 6px; font-size: 0.8rem; font-weight: 500;
+  cursor: pointer; font-family: var(--sans);
+  transition: border-color 0.2s, color 0.2s;
+}
+.cookie-reject:hover { border-color: var(--text-mid); color: var(--text); }
+
+/* ═══ MOBILE ═══ */
+@media (max-width: 768px) {
+  .hero { grid-template-columns: 1fr; padding: 3rem 1.25rem; gap: 2.5rem; }
+  .calc-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .flow-diagram { flex-direction: column; gap: 1rem; }
+  .flow-step::after { display: none; }
+  .nav-links { display: none; }
+  section { padding: 3.5rem 1.25rem; }
+  .intake-row { grid-template-columns: 1fr; }
+  #intake-panel { padding: 1.75rem 1.25rem; }
+}
+/* ── THEME TOGGLE ── */
+html { transition: background 0.25s, color 0.25s; }
+body { transition: background 0.25s, color 0.25s; }
+
+#theme-toggle {
+  background: none;
+  border: 1px solid var(--bg-border);
+  border-radius: 8px;
+  color: var(--text-mid);
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1.5rem;
-  font-size: 1.6rem;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  flex-shrink: 0;
 }
-.success-title {
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-size: 1.8rem;
-  color: #0E0E0E;
-  margin-bottom: 0.5rem;
-  letter-spacing: -0.02em;
+#theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
 }
-.success-body {
-  font-size: 0.9rem;
-  color: #6B6560;
-  line-height: 1.6;
-  max-width: 340px;
-  margin: 0 auto 1.5rem;
-}
-.success-stripe-btn {
-  display: inline-block;
-  background: #C4622D;
-  color: white;
-  padding: 0.8rem 2rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition: background 0.2s;
-}
-.success-stripe-btn:hover { background: #A8501F; }
-.success-note {
-  font-size: 0.78rem;
-  color: #8A857E;
-  margin-top: 0.75rem;
-}
- 
-@media (max-width: 500px) {
-  #intake-panel { padding: 1.75rem 1.25rem; }
-  .intake-row { grid-template-columns: 1fr; }
+#theme-toggle svg { width: 16px; height: 16px; }
+/* hide the irrelevant icon */
+#theme-toggle .icon-moon { display: none; }
+[data-theme="dark"] #theme-toggle .icon-sun  { display: none; }
+[data-theme="dark"] #theme-toggle .icon-moon { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 </style>
- 
-<!-- MODAL HTML -->
+</head>
+<body>
+
+<!-- ═══ COOKIE BANNER ═══ -->
+<div id="cookie-bar" role="dialog" aria-label="Cookie notice">
+  <p class="cookie-text">
+    We use cookies for Stripe payments and analytics. See our <a href="/cookies.html">Cookie Policy</a>.
+  </p>
+  <div class="cookie-btns">
+    <button class="cookie-reject" onclick="cookieChoice(false)">Reject</button>
+    <button class="cookie-accept" onclick="cookieChoice(true)">Accept</button>
+  </div>
+</div>
+
+<!-- ═══ MODAL ═══ -->
 <div id="intake-overlay" role="dialog" aria-modal="true" aria-labelledby="intake-heading">
   <div id="intake-panel">
     <button id="intake-close" aria-label="Close">✕</button>
- 
-    <!-- STEP 1: Contact -->
+
+    <!-- Step 1 -->
     <div class="intake-step active" id="step1">
       <div class="intake-progress">
         <div class="intake-dot active"></div>
@@ -1208,18 +880,17 @@
       <div class="intake-eyebrow">Step 1 of 3</div>
       <h2 class="intake-title" id="intake-heading">Tell us about your gym</h2>
       <p class="intake-sub">Takes 90 seconds. We use this to set up your account before your trial starts.</p>
- 
       <div class="intake-field">
         <label for="f-gym">Gym name</label>
         <input type="text" id="f-gym" placeholder="CrossFit Barcelona" autocomplete="organization">
       </div>
       <div class="intake-row">
         <div class="intake-field">
-          <label for="f-name">Owner name</label>
+          <label for="f-name">First name</label>
           <input type="text" id="f-name" placeholder="Marc" autocomplete="given-name">
         </div>
         <div class="intake-field">
-          <label for="f-surname">Surname</label>
+          <label for="f-surname">Last name</label>
           <input type="text" id="f-surname" placeholder="García" autocomplete="family-name">
         </div>
       </div>
@@ -1228,17 +899,16 @@
         <input type="email" id="f-email" placeholder="marc@crossfitbarcelona.com" autocomplete="email">
       </div>
       <div class="intake-field">
-        <label for="f-phone">Phone number <span style="color:#8A857E;font-weight:400;">(optional)</span></label>
+        <label for="f-phone">Phone <span style="color:var(--text-light);font-weight:400">(optional)</span></label>
         <input type="tel" id="f-phone" placeholder="+34 612 345 678" autocomplete="tel">
-        <p class="intake-hint">We'll email you to confirm setup — this is just a backup contact.</p>
+        <p class="intake-hint">We'll email you — this is just a backup contact.</p>
       </div>
- 
       <div class="intake-btn-row">
         <button class="intake-next" onclick="intakeNext(1)">Continue →</button>
       </div>
     </div>
- 
-    <!-- STEP 2: Business details -->
+
+    <!-- Step 2 -->
     <div class="intake-step" id="step2">
       <div class="intake-progress">
         <div class="intake-dot"></div>
@@ -1247,8 +917,7 @@
       </div>
       <div class="intake-eyebrow">Step 2 of 3</div>
       <h2 class="intake-title">Your Stripe details</h2>
-      <p class="intake-sub">We need this to connect GymOS to your payments. We only ever read — never touch your money.</p>
- 
+      <p class="intake-sub">We connect read-only to your Stripe. We monitor payment status — we never touch your funds.</p>
       <div class="intake-row">
         <div class="intake-field">
           <label for="f-members">Active members</label>
@@ -1271,15 +940,13 @@
           </select>
         </div>
       </div>
- 
       <div class="intake-field">
         <label for="f-stripe">Stripe Account ID</label>
         <input type="text" id="f-stripe" placeholder="acct_1A2B3C4D5E6F7G8H">
-        <p class="intake-hint">Find it in Stripe → Settings → Account details. Starts with "acct_".</p>
+        <p class="intake-hint">Stripe → Settings → Account details. Starts with "acct_".</p>
       </div>
- 
       <div class="intake-field">
-        <label for="f-software">Gym software (optional)</label>
+        <label for="f-software">Gym software <span style="color:var(--text-light);font-weight:400">(optional)</span></label>
         <select id="f-software">
           <option value="">Select if applicable…</option>
           <option>Glofox</option>
@@ -1289,16 +956,14 @@
           <option>TeamUp</option>
           <option>Other / Direct Stripe</option>
         </select>
-        <p class="intake-hint">Helps us configure the integration correctly.</p>
       </div>
- 
       <div class="intake-btn-row">
         <button class="intake-back" onclick="intakeBack(2)">← Back</button>
         <button class="intake-next" onclick="intakeNext(2)">Review →</button>
       </div>
     </div>
- 
-    <!-- STEP 3: Review + submit -->
+
+    <!-- Step 3 -->
     <div class="intake-step" id="step3">
       <div class="intake-progress">
         <div class="intake-dot"></div>
@@ -1307,226 +972,56 @@
       </div>
       <div class="intake-eyebrow">Step 3 of 3</div>
       <h2 class="intake-title">Confirm your details</h2>
-      <p class="intake-sub">Check everything looks right, then we'll take you to Stripe to start your free 30 days.</p>
- 
-      <div class="review-block" id="reviewBlock">
-        <!-- filled by JS -->
-      </div>
- 
+      <p class="intake-sub">Everything look right? We'll take you to Stripe to start your free 30 days.</p>
+      <div class="review-block" id="reviewBlock"></div>
       <p class="intake-legal">
-        A card is required on the next screen to activate your 30-day trial — you won't be charged until day 31.
-        By continuing you agree to our
-        <a href="/terms.html" target="_blank">Terms of Service</a> and
-        <a href="/privacy.html" target="_blank">Privacy Policy</a>.
-        Your Stripe Account ID is stored securely and used only to connect GymOS to your payments.
-        We never store card data. Compliant with EU AI Act transparency requirements (August 2026).
+        A card is required on the next screen — you won't be charged until day 31.
+        By continuing you agree to our <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.
+        Your Stripe ID is stored securely and used only to connect GymOS to your payments. We never store card data.
       </p>
- 
       <div class="intake-btn-row">
         <button class="intake-back" onclick="intakeBack(3)">← Back</button>
         <button class="intake-next" id="submitBtn" onclick="intakeSubmit()">Start free trial →</button>
       </div>
     </div>
- 
-    <!-- SUCCESS -->
+
+    <!-- Success -->
     <div id="intake-success" style="display:none">
       <div class="success-icon">✓</div>
       <div class="success-title">You're in.</div>
       <p class="success-body">
         We've received your details and will email you within 24 hours to complete setup.<br><br>
-        Now start your 30-day free trial on Stripe — your card won't be charged until day 31.
+        Now activate your 30-day free trial on Stripe. Your card won't be charged until day 31.
       </p>
       <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" class="success-stripe-btn">
         Activate free trial on Stripe →
       </a>
-      <p class="success-note">Card required to activate. Cancel anytime before day 31 and you won't be charged.</p>
+      <p class="success-note">Card required to activate. Cancel anytime before day 31.</p>
     </div>
- 
   </div>
 </div>
- 
-<script>
-(function() {
-  // ── OPEN / CLOSE ──
-  const overlay = document.getElementById('intake-overlay');
- 
-  function openIntake(e) {
-    if (e) e.preventDefault();
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    // reset to step 1
-    showStep(1);
-    document.getElementById('intake-success').style.display = 'none';
-    document.querySelectorAll('.intake-step').forEach(s => s.style.display = '');
-  }
- 
-  function closeIntake() {
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
-  }
- 
-  document.getElementById('intake-close').addEventListener('click', closeIntake);
-  overlay.addEventListener('click', function(e) {
-    if (e.target === overlay) closeIntake();
-  });
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeIntake();
-  });
- 
-  // ── INTERCEPT ALL STRIPE CTAS ──
-  // Intercept links to Stripe checkout — but never intercept the Stripe
-  // button that lives INSIDE this same modal's success step. That one has
-  // already been through the form; it must be allowed to actually open
-  // Stripe instead of reopening the modal at step 1.
-  document.addEventListener('click', function(e) {
-    const a = e.target.closest('a[href*="buy.stripe.com"]');
-    if (a && !overlay.contains(a)) { openIntake(e); }
-  }, true);
- 
-  // ── STEP LOGIC ──
-  window.showStep = function(n) {
-    document.querySelectorAll('.intake-step').forEach((s, i) => {
-      s.classList.toggle('active', i + 1 === n);
-    });
-    // update dots
-    document.querySelectorAll('.intake-dot').forEach((d, i) => {
-      d.classList.toggle('active', i + 1 === n);
-    });
-  };
- 
-  window.intakeNext = function(fromStep) {
-    if (fromStep === 1) {
-      const gym = document.getElementById('f-gym').value.trim();
-      const name = document.getElementById('f-name').value.trim();
-      const email = document.getElementById('f-email').value.trim();
-      const phone = document.getElementById('f-phone').value.trim();
-      if (!gym || !name || !email) {
-        alert('Please fill in gym name, your name and email before continuing.');
-        return;
-      }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        alert('Please enter a valid email address.');
-        return;
-      }
-      showStep(2);
-    } else if (fromStep === 2) {
-      const members = document.getElementById('f-members').value.trim();
-      const country = document.getElementById('f-country').value;
-      const stripe = document.getElementById('f-stripe').value.trim();
-      if (!members || !country || !stripe) {
-        alert('Please fill in all required fields.');
-        return;
-      }
-      if (!stripe.startsWith('acct_') && stripe.length > 0) {
-        if (!confirm('Your Stripe Account ID usually starts with "acct_". Continue anyway?')) return;
-      }
-      // populate review
-      buildReview();
-      showStep(3);
-    }
-  };
- 
-  window.intakeBack = function(fromStep) {
-    showStep(fromStep - 1);
-  };
- 
-  function buildReview() {
-    const data = collectData();
-    const block = document.getElementById('reviewBlock');
-    const rows = [
-      ['Gym', data.gym],
-      ['Owner', data.name + ' ' + data.surname],
-      ['Email', data.email],
-      ['Phone', data.phone || '—'],
-      ['Members', data.members],
-      ['Country', data.country],
-      ['Stripe ID', data.stripe || '—'],
-      ['Software', data.software || '—'],
-    ];
-    block.innerHTML = rows.map(([k, v]) =>
-      `<div class="review-row"><span class="review-key">${k}</span><span class="review-val">${v || '—'}</span></div>`
-    ).join('');
-  }
- 
-  function collectData() {
-    return {
-      gym:      document.getElementById('f-gym').value.trim(),
-      name:     document.getElementById('f-name').value.trim(),
-      surname:  document.getElementById('f-surname').value.trim(),
-      email:    document.getElementById('f-email').value.trim(),
-      phone:    document.getElementById('f-phone').value.trim(),
-      members:  document.getElementById('f-members').value.trim(),
-      country:  document.getElementById('f-country').value,
-      stripe:   document.getElementById('f-stripe').value.trim(),
-      software: document.getElementById('f-software').value,
-    };
-  }
- 
-  window.intakeSubmit = function() {
-    const btn = document.getElementById('submitBtn');
-    btn.textContent = 'Sending…';
-    btn.disabled = true;
- 
-    const data = collectData();
- 
-    // ── GOOGLE FORM SUBMISSION ──
 
-    const FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSf23QWkB1KJ9L3nhquLz_yi1t2C2oE9ah6KUuVxnhKKb6JauQ/formResponse';
-    const body = new URLSearchParams({
-      'entry.GYM':      data.gym,
-      'entry.NAME':     data.name + ' ' + data.surname,
-      'entry.EMAIL':    data.email,
-      'entry.PHONE':    data.phone,
-      'entry.MEMBERS':  data.members,
-      'entry.COUNTRY':  data.country,
-      'entry.STRIPE':   data.stripe,
-      'entry.SOFTWARE': data.software,
-    });
- 
-    // Fire and forget — we don't need the response
-    fetch(FORM_ACTION, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: body.toString(),
-    }).catch(() => {
-      // Silently ignore — user still gets to Stripe regardless
-    });
- 
-    // Also write to localStorage as backup
-    try {
-      const existing = JSON.parse(localStorage.getItem('gymos_leads') || '[]');
-      existing.push({ ...data, ts: new Date().toISOString() });
-      localStorage.setItem('gymos_leads', JSON.stringify(existing));
-    } catch(e) {}
- 
-    // Show success after brief pause
-    setTimeout(() => {
-      document.querySelectorAll('.intake-step').forEach(s => s.style.display = 'none');
-      document.getElementById('intake-success').style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = 'Start free trial →';
-    }, 900);
-  };
-})();
-</script>
- 
-<body>
-
-<!-- NAV -->
+<!-- ═══ NAV ═══ -->
 <nav>
   <a href="/" class="nav-logo">GymOS</a>
   <ul class="nav-links">
     <li><a href="#how-it-works">How it works</a></li>
     <li><a href="#calculator">Calculator</a></li>
     <li><a href="#pricing">Pricing</a></li>
-    <li><a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" class="nav-cta">Start free trial</a></li>
+    <li>
+      <button id="theme-toggle" aria-label="Toggle dark mode" title="Toggle light / dark mode">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </li>
+    <li><a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" class="nav-cta">Start free trial</a></li>
   </ul>
 </nav>
 
-<!-- HERO -->
+<!-- ═══ HERO ═══ -->
 <div class="hero">
-  <div class="hero-left reveal">
+  <div class="reveal">
+    <div class="hero-eyebrow">Payment recovery · WhatsApp automation</div>
     <h1 class="hero-headline">
       Recover lost payments.<br>
       <em>Without lifting a finger.</em>
@@ -1535,104 +1030,93 @@
       The moment a member's card fails, GymOS sends them a WhatsApp — not an email nobody reads. They update in minutes. You find out when the money lands in Stripe.
     </p>
     <div class="hero-actions">
-      <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" class="btn-primary">
+      <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" class="btn-primary">
         Start free — 30 days
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
       <a href="#how-it-works" class="btn-ghost">See how it works</a>
     </div>
-    <p class="hero-note">30 days free · Beta pricing · First 5 gyms only</p>
-    <p class="hero-note" style="margin-top:0.4rem;">Checkout secured by Stripe · We never see or store your card numbers · GDPR-aligned data handling</p>
+    <p class="hero-trust">Checkout secured by Stripe · We never see or store card numbers · GDPR-aligned</p>
   </div>
-  <div class="hero-right reveal" style="transition-delay:0.12s">
+  <div class="reveal" style="transition-delay:0.12s">
     <div class="payment-stage" id="paymentStage">
       <div class="stage-label">Live recovery flow</div>
-
       <div class="anim-line" id="l1">
-        <div class="anim-icon icon-red">✕</div>
+        <span class="anim-icon icon-red">✕</span>
         <div class="anim-content">
           <div class="anim-title">Card declined</div>
           <div class="anim-sub">Stripe · invoice.payment_failed</div>
         </div>
         <div class="anim-time">22:17</div>
       </div>
-
       <div class="anim-divider" id="d1"></div>
-
       <div class="anim-line" id="l2">
-        <div class="anim-icon icon-amber">⏱</div>
+        <span class="anim-icon icon-amber">⏱</span>
         <div class="anim-content">
           <div class="anim-title">GymOS is waiting</div>
           <div class="anim-sub">60 min · Stripe retry in progress</div>
         </div>
         <div class="anim-time">22:18</div>
       </div>
-
       <div class="anim-divider" id="d2"></div>
-
       <div class="anim-line" id="l3">
-        <div class="anim-icon icon-blue">💬</div>
+        <span class="anim-icon icon-blue">💬</span>
         <div class="anim-content">
           <div class="anim-title">WhatsApp sent to Sarah</div>
           <div class="anim-sub">"Hi Sarah, your €69 payment didn't go through…"</div>
         </div>
         <div class="anim-time">23:17</div>
       </div>
-
       <div class="anim-divider" id="d3"></div>
-
       <div class="anim-line" id="l4">
-        <div class="anim-icon icon-green">✓</div>
+        <span class="anim-icon icon-green">✓</span>
         <div class="anim-content">
           <div class="anim-title">Card updated · Payment retried</div>
           <div class="anim-sub">Stripe · invoice.payment_succeeded</div>
         </div>
         <div class="anim-time">23:22</div>
       </div>
-
       <div class="recovered-banner" id="recoveredBanner">
-        <div class="recovered-label">Recovered automatically</div>
-        <div class="recovered-amount">€69.00</div>
+        <span class="recovered-label">Recovered automatically</span>
+        <span class="recovered-amount">€69.00</span>
       </div>
     </div>
   </div>
 </div>
 
-<!-- HOW IT WORKS -->
+<!-- ═══ HOW IT WORKS ═══ -->
 <section id="how-it-works">
   <div class="section-inner">
     <span class="section-label reveal">How it works</span>
     <h2 class="section-title reveal">Five steps. None of them involve you.</h2>
     <p class="section-sub reveal">GymOS runs in the background, quietly recovering money that would have disappeared.</p>
-
-    <div class="flow-diagram" id="flowDiagram">
+    <div class="flow-diagram">
       <div class="flow-step reveal" data-step="0">
         <div class="flow-num">1</div>
         <div class="flow-name">Card declined</div>
         <div class="flow-desc">Stripe fires a webhook the moment payment fails</div>
       </div>
-      <div class="flow-step reveal" style="transition-delay:0.1s" data-step="1">
+      <div class="flow-step reveal" style="transition-delay:0.08s" data-step="1">
         <div class="flow-num">2</div>
         <div class="flow-name">We wait 60 min</div>
-        <div class="flow-desc">Stripe retries automatically — we only act if it fails</div>
+        <div class="flow-desc">Stripe retries first — we only act if it fails</div>
       </div>
-      <div class="flow-step reveal" style="transition-delay:0.2s" data-step="2">
+      <div class="flow-step reveal" style="transition-delay:0.16s" data-step="2">
         <div class="flow-num">3</div>
         <div class="flow-name">WhatsApp sent</div>
-        <div class="flow-desc">A polite, personal message with a direct update link</div>
+        <div class="flow-desc">Personal message with a direct card-update link</div>
       </div>
-      <div class="flow-step reveal" style="transition-delay:0.3s" data-step="3">
+      <div class="flow-step reveal" style="transition-delay:0.24s" data-step="3">
         <div class="flow-num">4</div>
         <div class="flow-name">Member updates</div>
-        <div class="flow-desc">Secure Stripe-hosted page. 30 seconds on their phone</div>
+        <div class="flow-desc">Secure Stripe page. 30 seconds on their phone</div>
       </div>
-      <div class="flow-step reveal" style="transition-delay:0.4s" data-step="4">
+      <div class="flow-step reveal" style="transition-delay:0.32s" data-step="4">
         <div class="flow-num">5</div>
         <div class="flow-name">Money recovered</div>
         <div class="flow-desc">Stripe retries. You see it land in your dashboard</div>
       </div>
     </div>
-
     <div class="flow-detail active" id="flowDetail">
       <div class="flow-detail-title">Card declined</div>
       <div class="flow-detail-text">Stripe detects the failed payment the moment it happens and fires a webhook. GymOS picks it up instantly — no manual checking, no delays, no one has to be watching.</div>
@@ -1640,46 +1124,34 @@
   </div>
 </section>
 
-<!-- QUOTE -->
+<!-- ═══ QUOTE ═══ -->
 <div class="quote-section">
   <p class="big-quote reveal">
-    "A declined payment should never become<br>
-    a <span>cancelled membership.</span>"
+    "A declined payment should never become<br>a <span>cancelled membership.</span>"
   </p>
 </div>
 
-<!-- ROI CALCULATOR -->
+<!-- ═══ ROI CALCULATOR ═══ -->
 <section id="calculator">
   <div class="section-inner">
     <span class="section-label reveal">ROI Calculator</span>
     <h2 class="section-title reveal">See what you're leaving on the table.</h2>
-    <p class="section-sub reveal">Move the sliders. The numbers update in real time.</p>
-
+    <p class="section-sub reveal">Move the sliders. Numbers update in real time, in your currency.</p>
     <div class="calc-grid">
       <div class="calc-sliders reveal">
         <div class="slider-group">
-          <label>
-            Number of members
-            <span class="slider-val" id="valMembers">300</span>
-          </label>
+          <label>Number of members <span class="slider-val" id="valMembers">300</span></label>
           <input type="range" id="slMembers" min="50" max="2000" value="300" step="10">
         </div>
         <div class="slider-group">
-          <label>
-            Average monthly fee
-            <span class="slider-val" id="valFee" data-currency="€">€55</span>
-          </label>
+          <label>Average monthly fee <span class="slider-val" id="valFee">€55</span></label>
           <input type="range" id="slFee" min="20" max="200" value="55" step="5">
         </div>
         <div class="slider-group">
-          <label>
-            Assumed failed payment rate
-            <span class="slider-val" id="valRate">4%</span>
-          </label>
+          <label>Assumed failed payment rate <span class="slider-val" id="valRate">4%</span></label>
           <input type="range" id="slRate" min="1" max="10" value="4" step="0.5">
         </div>
       </div>
-
       <div class="calc-results reveal" style="transition-delay:0.1s">
         <div class="result-row">
           <span class="result-label">Lost per month without GymOS</span>
@@ -1702,148 +1174,93 @@
   </div>
 </section>
 
-<!-- WHY IT WORKS -->
+<!-- ═══ WHY IT WORKS ═══ -->
 <section id="why">
   <div class="section-inner">
     <span class="section-label reveal">Why it works</span>
     <h2 class="section-title reveal">Five honest reasons.</h2>
-
     <div class="why-grid">
       <div class="why-card reveal">
-        <svg class="why-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5">
-          <rect x="4" y="8" width="28" height="20" rx="3"/>
-          <path d="M4 14h28"/>
-          <path d="M10 20h4M10 23h8"/>
-        </svg>
+        <svg class="why-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="26" height="18" rx="3"/><path d="M3 13h26"/><path d="M9 19h4M9 22h7"/></svg>
         <div class="why-name">Works with Stripe</div>
-        <div class="why-text">If your gym software takes card payments, it almost certainly runs on Stripe underneath. GymOS plugs straight in.</div>
+        <div class="why-text">If your gym software takes card payments, it almost certainly runs on Stripe. GymOS plugs straight in.</div>
       </div>
-
-      <div class="why-card reveal" style="transition-delay:0.08s">
-        <svg class="why-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M6 8h16a2 2 0 012 2v10a2 2 0 01-2 2H12l-4 4v-4H6a2 2 0 01-2-2V10a2 2 0 012-2z"/>
-          <path d="M22 12h8a2 2 0 012 2v7a2 2 0 01-2 2h-2v3l-3-3h-3"/>
-        </svg>
+      <div class="why-card reveal" style="transition-delay:0.07s">
+        <svg class="why-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 7h15a2 2 0 012 2v9a2 2 0 01-2 2H11l-4 4v-4H5a2 2 0 01-2-2V9a2 2 0 012-2z"/><path d="M20 11h7a2 2 0 012 2v6a2 2 0 01-2 2h-2v3l-3-3h-2"/></svg>
         <div class="why-name">Uses WhatsApp</div>
-        <div class="why-text">WhatsApp open rates are 5× higher than email. Your members already have it open. That's just where people read things in 2026.</div>
+        <div class="why-text">WhatsApp open rates are 5× higher than email. Your members already have it open.</div>
       </div>
-
-      <div class="why-card reveal" style="transition-delay:0.16s">
-        <svg class="why-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5">
-          <circle cx="18" cy="18" r="12"/>
-          <path d="M18 10v8l5 3"/>
-        </svg>
+      <div class="why-card reveal" style="transition-delay:0.14s">
+        <svg class="why-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="16" cy="16" r="11"/><path d="M16 9v7l4 2.5"/></svg>
         <div class="why-name">Waits before messaging</div>
-        <div class="why-text">Stripe retries automatically. We only message if that retry fails. No panicked messages about payments that were already going to clear.</div>
+        <div class="why-text">Stripe retries automatically. We only message if that fails. No panicked messages on payments that clear themselves.</div>
       </div>
-
-      <div class="why-card reveal" style="transition-delay:0.24s">
-        <svg class="why-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M8 18l6 6 14-14"/>
-          <circle cx="18" cy="18" r="14" stroke-dasharray="4 2"/>
-        </svg>
+      <div class="why-card reveal" style="transition-delay:0.21s">
+        <svg class="why-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 16l5 5 13-13"/><circle cx="16" cy="16" r="13" stroke-dasharray="4 2"/></svg>
         <div class="why-name">10-minute setup</div>
-        <div class="why-text">You share your Stripe ID. We handle everything else. No developer needed, no new software to learn. Most gyms are live the same day.</div>
+        <div class="why-text">You share your Stripe ID. We handle everything else. No developer, no new software. Most gyms are live the same day.</div>
       </div>
-
-      <div class="why-card reveal" style="transition-delay:0.32s">
-        <svg class="why-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M18 4l2 5h5l-4 3 2 5-5-3-5 3 2-5-4-3h5z"/>
-          <path d="M6 28h24"/>
-          <path d="M9 32h18"/>
-        </svg>
+      <div class="why-card reveal" style="transition-delay:0.28s">
+        <svg class="why-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 3l2 4h5l-4 3 2 5-5-3-5 3 2-5-4-3h5z"/><path d="M5 25h22M8 29h16"/></svg>
         <div class="why-name">EU transparency ready</div>
-        <div class="why-text">Every message includes the AI disclosure required by the EU AI Act's August 2026 transparency rules. One less thing for you to think about.</div>
+        <div class="why-text">Every message includes the AI disclosure required by the EU AI Act's August 2026 rules. Handled for you.</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FOUNDER -->
+<!-- ═══ FOUNDER ═══ -->
 <section id="story">
   <div class="section-inner">
     <span class="section-label reveal">Our story</span>
     <h2 class="section-title reveal">Why we built this</h2>
     <div class="founder-card reveal">
-      <p class="founder-text">
-        We built GymOS after watching independent gym owners lose thousands every year to expired cards and ignored emails — money they'd already earned, just quietly disappearing. Most didn't even know how much they were losing.
-      </p>
-      <p class="founder-text">
-        We're a small team opening our beta to the first 5 gyms. Setup is fully hands-on, pricing is low, and if it doesn't recover more than it costs in month one, you pay nothing.
-      </p>
+      <p class="founder-text">We built GymOS after watching independent gym owners lose thousands every year to expired cards and ignored emails — money they'd already earned, just quietly disappearing. Most didn't even know how much they were losing.</p>
+      <p class="founder-text">We're a small team opening our beta to the first 5 gyms. Setup is fully hands-on, pricing is low, and if it doesn't recover more than it costs in month one, you pay nothing.</p>
       <div class="founder-sig">— Hira &amp; the GymOS team</div>
     </div>
   </div>
 </section>
 
-<!-- PRICING -->
+<!-- ═══ PRICING ═══ -->
 <section id="pricing">
   <div class="section-inner">
     <span class="section-label reveal">Pricing</span>
     <h2 class="section-title reveal">Simple. One plan.</h2>
-    <p class="section-sub reveal">First 5 gyms get 30 days completely free. Card required to start — you're not charged until day 31.</p>
-
+    <p class="section-sub reveal">First 5 gyms get 30 days free. Card required to activate — not charged until day 31.</p>
     <div class="pricing-toggle reveal">
       <span class="toggle-label active" id="labelMonthly">Monthly</span>
       <button class="toggle-switch" id="pricingToggle" aria-label="Toggle annual pricing"></button>
       <span class="toggle-label" id="labelAnnual">Annual</span>
       <span class="save-badge" id="saveBadge" style="display:none">Save 17%</span>
     </div>
-
     <div class="pricing-card reveal">
       <div class="pricing-badge">Beta offer — 5 spots</div>
       <div class="pricing-trial">Free for 30 days</div>
-      <div class="pricing-then">Card required to start. No charge until day 31. Then</div>
+      <div class="pricing-then">Card required. No charge until day 31. Then</div>
       <div class="pricing-price-display" id="priceDisplay">€99/month</div>
       <div class="pricing-cancel" id="priceNote">Cancel anytime.</div>
-
       <ul class="pricing-features">
-        <li>
-          <svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Unlimited payment recovery
-        </li>
-        <li>
-          <svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          WhatsApp automation
-        </li>
-        <li>
-          <svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          10-minute setup — we do it for you
-        </li>
-        <li>
-          <svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Full message &amp; recovery log
-        </li>
-        <li>
-          <svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          EU transparency ready
-        </li>
-        <li>
-          <svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Direct founder support
-        </li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited payment recovery</li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>WhatsApp automation</li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>10-minute setup — we do it for you</li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Full message &amp; recovery log</li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>EU transparency ready</li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Direct founder support</li>
       </ul>
-
-      <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" class="pricing-cta" id="pricingCta">
-        Start your free 30 days →
-      </a>
+      <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" class="pricing-cta" id="pricingCta">Start your free 30 days →</a>
       <p class="pricing-note">Card required. Not charged until day 31. Cancel anytime.</p>
     </div>
   </div>
 </section>
 
-<!-- FINAL CTA -->
+<!-- ═══ FINAL CTA ═══ -->
 <div class="final-cta">
-  <h2 class="final-cta-title reveal">
-    Your next failed payment<br>
-    is being recovered <em>right now.</em>
-  </h2>
-  <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" target="_blank" class="btn-primary reveal" style="transition-delay:0.1s">
-    Start managing smarter →
-  </a>
+  <h2 class="final-cta-title reveal">Your next failed payment<br>is being recovered <em>right now.</em></h2>
+  <a href="https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00" class="btn-primary reveal" style="transition-delay:0.1s">Start managing smarter →</a>
 </div>
 
-<!-- FOOTER -->
+<!-- ═══ FOOTER ═══ -->
 <footer>
   <div class="footer-inner">
     <div class="footer-top">
@@ -1871,183 +1288,332 @@
         <ul>
           <li><a href="/privacy.html">Privacy Policy</a></li>
           <li><a href="/terms.html">Terms of Service</a></li>
-          <li><a href="/privacy.html#ai">AI Disclosure</a></li>
+          <li><a href="/cookies.html">Cookie Policy</a></li>
+          <li><a href="/privacy.html#ai-disclosure">AI Disclosure</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
       <span>© 2026 GymOS · Built by Meraki</span>
-      <span class="footer-email">gymostool@gmail.com</span>
+      <span>gymostool@gmail.com</span>
     </div>
   </div>
 </footer>
 
 <script>
-// ─── PAYMENT ANIMATION ───
-const animLines = [
-  { line: 'l1', div: 'd1', delay: 400 },
-  { line: 'l2', div: 'd2', delay: 1000 },
-  { line: 'l3', div: 'd3', delay: 1800 },
-  { line: 'l4', div: null, delay: 2600 },
-];
+// ═══ COOKIE BANNER ═══
+(function(){
+  var bar = document.getElementById('cookie-bar');
+  if (localStorage.getItem('gymos_cookie_choice')) return;
+  setTimeout(function(){ bar.classList.add('visible'); }, 1200);
+  window.cookieChoice = function(accepted) {
+    localStorage.setItem('gymos_cookie_choice', accepted ? 'accepted' : 'rejected');
+    bar.classList.remove('visible');
+    bar.classList.add('hidden');
+  };
+})();
 
-const recoveredBanner = document.getElementById('recoveredBanner');
+// ═══ PAYMENT ANIMATION ═══
+// Runs once on load. When hero scrolls out of view, resets.
+// When it scrolls back into view, runs again. Never loops on its own.
+(function(){
+  var lines = ['l1','l2','l3','l4'];
+  var divs  = ['d1','d2','d3'];
+  var delays = [300, 900, 1600, 2400];
+  var banner = document.getElementById('recoveredBanner');
+  var stage  = document.getElementById('paymentStage');
+  var timers = [];
+  var done   = false;
+  var inView = false;
 
-function runAnimation() {
-  // reset
-  animLines.forEach(({ line, div }) => {
-    document.getElementById(line).classList.remove('visible');
-    if (div) document.getElementById(div).classList.remove('visible');
+  function resetAnim() {
+    timers.forEach(clearTimeout);
+    timers = [];
+    done = false;
+    lines.forEach(function(id){ document.getElementById(id).classList.remove('visible'); });
+    divs.forEach(function(id){ document.getElementById(id).classList.remove('visible'); });
+    banner.classList.remove('visible');
+  }
+
+  function playAnim() {
+    if (done) return;
+    lines.forEach(function(id, i){
+      timers.push(setTimeout(function(){
+        document.getElementById(id).classList.add('visible');
+        if (divs[i]) document.getElementById(divs[i]).classList.add('visible');
+      }, delays[i]));
+    });
+    timers.push(setTimeout(function(){
+      banner.classList.add('visible');
+      done = true;
+    }, 3100));
+  }
+
+  var obs = new IntersectionObserver(function(entries){
+    var entry = entries[0];
+    if (entry.isIntersecting && !inView) {
+      inView = true;
+      if (done) { resetAnim(); }
+      setTimeout(playAnim, 200);
+    } else if (!entry.isIntersecting && inView) {
+      inView = false;
+      // reset so it replays when they scroll back
+      resetAnim();
+    }
+  }, { threshold: 0.3 });
+
+  obs.observe(stage);
+})();
+
+// ═══ FLOW STEPS ═══
+(function(){
+  var steps = document.querySelectorAll('.flow-step');
+  var detail = document.getElementById('flowDetail');
+  var details = [
+    { title: 'Card declined', text: 'Stripe detects the failed payment the moment it happens and fires a webhook. GymOS picks it up instantly — no manual checking, no delays, no one has to be watching.' },
+    { title: 'We wait 60 minutes', text: 'Stripe has its own automatic retry logic. GymOS sits quietly for an hour. If Stripe recovers the payment on its own, we do nothing at all. We only step in when the retry clearly failed.' },
+    { title: 'WhatsApp sent', text: 'A polite, personal message goes to your member with a direct link to update their card. No login required, no friction — just a 30-second fix from their phone.' },
+    { title: 'Member updates their card', text: 'They tap the link and enter new card details on a Stripe-hosted page. PCI compliant, encrypted, and fast. Most members do this within minutes of receiving the message.' },
+    { title: 'Money recovered', text: 'Stripe retries the payment automatically. The charge goes through, the membership stays active, and you see the money land in your Stripe dashboard. You did nothing.' }
+  ];
+  steps.forEach(function(step, i){
+    step.addEventListener('click', function(){
+      steps.forEach(function(s){ s.classList.remove('active'); });
+      step.classList.add('active');
+      detail.innerHTML = '<div class="flow-detail-title">'+details[i].title+'</div><div class="flow-detail-text">'+details[i].text+'</div>';
+      detail.classList.add('active');
+    });
   });
-  recoveredBanner.classList.remove('visible');
+})();
 
-  animLines.forEach(({ line, div, delay }) => {
-    setTimeout(() => {
-      document.getElementById(line).classList.add('visible');
-      if (div) document.getElementById(div).classList.add('visible');
-    }, delay);
+// ═══ ROI CALCULATOR + SILENT CURRENCY ═══
+(function(){
+  var currency = { symbol: '€', rate: 1 };
+
+  fetch('https://ipapi.co/json/')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var map = { GB:{symbol:'£',rate:0.86}, CA:{symbol:'CA$',rate:1.43}, US:{symbol:'$',rate:1.08}, AU:{symbol:'A$',rate:1.62} };
+      if (map[d.country_code]) {
+        currency = map[d.country_code];
+        updateCalc();
+        updatePriceDisplay();
+      }
+    }).catch(function(){});
+
+  function fmt(eur) {
+    return currency.symbol + Math.round(eur * currency.rate).toLocaleString();
+  }
+
+  function updateCalc() {
+    var m = parseInt(document.getElementById('slMembers').value);
+    var f = parseInt(document.getElementById('slFee').value);
+    var r = parseFloat(document.getElementById('slRate').value) / 100;
+    document.getElementById('valMembers').textContent = m.toLocaleString();
+    document.getElementById('valFee').textContent = currency.symbol + f;
+    document.getElementById('valRate').textContent = (r*100).toFixed(1) + '%';
+    var lost = m * f * r;
+    var rec  = lost * 0.78;
+    var cost = 99;
+    var gain = rec - cost;
+    document.getElementById('rLost').textContent = fmt(lost);
+    document.getElementById('rRecovered').textContent = fmt(rec);
+    document.getElementById('rCost').textContent = fmt(cost);
+    document.getElementById('rGain').textContent = gain > 0 ? fmt(gain) : currency.symbol + '0';
+  }
+
+  window._updateCalc = updateCalc;
+  window._getCurrency = function(){ return currency; };
+
+  ['slMembers','slFee','slRate'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', updateCalc);
   });
+  updateCalc();
 
-  setTimeout(() => {
-    recoveredBanner.classList.add('visible');
-  }, 3200);
-}
+  // ═══ PRICING TOGGLE ═══
+  var isAnnual = false;
+  var tog = document.getElementById('pricingToggle');
+  var pd  = document.getElementById('priceDisplay');
+  var pn  = document.getElementById('priceNote');
+  var lm  = document.getElementById('labelMonthly');
+  var la  = document.getElementById('labelAnnual');
+  var sb  = document.getElementById('saveBadge');
+  var pc  = document.getElementById('pricingCta');
+  var MONTHLY = 'https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00';
+  var ANNUAL  = 'https://buy.stripe.com/7sY14o1lIbzZdwSfoteAg01';
 
-// Start after short delay, then loop
-setTimeout(() => {
-  runAnimation();
-  setInterval(runAnimation, 5500);
-}, 600);
+  window.updatePriceDisplay = function() {
+    if (isAnnual) {
+      pd.textContent = currency.symbol + Math.round(82 * currency.rate) + '/month';
+      pn.textContent = 'Billed annually (' + currency.symbol + Math.round(990 * currency.rate) + '/year). Cancel anytime.';
+    } else {
+      pd.textContent = currency.symbol + Math.round(99 * currency.rate) + '/month';
+      pn.textContent = 'Cancel anytime.';
+    }
+  };
 
-// ─── FLOW STEPS ───
-const flowSteps = document.querySelectorAll('.flow-step');
-const flowDetail = document.getElementById('flowDetail');
-
-const stepDetails = [
-  { title: 'Card declined', text: 'Stripe detects the failed payment the moment it happens and fires a webhook. GymOS picks it up instantly — no manual checking, no delays, no one has to be watching.' },
-  { title: 'We wait 60 minutes', text: 'Stripe has its own automatic retry logic. GymOS sits quietly for an hour. If Stripe recovers the payment on its own, we do nothing at all. We only step in when the retry clearly failed.' },
-  { title: 'WhatsApp sent', text: 'A polite, personal message goes to your member with a direct link to update their card. No login required, no friction — just a 30-second fix from their phone.' },
-  { title: 'Member updates their card', text: 'They tap the link and enter new card details on a Stripe-hosted page. PCI compliant, encrypted, and fast. Most members do this within minutes of receiving the message.' },
-  { title: 'Money recovered', text: 'Stripe retries the payment automatically. The charge goes through, the membership stays active, and you see the money land in your Stripe dashboard. You did nothing.' },
-];
-
-flowSteps.forEach((step, i) => {
-  step.addEventListener('click', () => {
-    flowSteps.forEach(s => s.classList.remove('active'));
-    step.classList.add('active');
-    flowDetail.innerHTML = `<div class="flow-detail-title">${stepDetails[i].title}</div><div class="flow-detail-text">${stepDetails[i].text}</div>`;
-    flowDetail.classList.add('active');
+  tog.addEventListener('click', function(){
+    isAnnual = !isAnnual;
+    tog.classList.toggle('annual', isAnnual);
+    lm.classList.toggle('active', !isAnnual);
+    la.classList.toggle('active', isAnnual);
+    sb.style.display = isAnnual ? 'inline' : 'none';
+    pc.href = isAnnual ? ANNUAL : MONTHLY;
+    pc.textContent = isAnnual ? 'Start annual plan →' : 'Start your free 30 days →';
+    window.updatePriceDisplay();
   });
-});
+  window.updatePriceDisplay();
+})();
 
-// ─── ROI CALCULATOR ───
-let currency = { symbol: '€', rate: 1 };
+// ═══ SCROLL REVEAL ═══
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(function(el){ obs.observe(el); });
+})();
 
-async function detectCurrency() {
-  try {
-    const res = await fetch('https://ipapi.co/json/');
-    const data = await res.json();
-    const map = {
-      'GB': { symbol: '£', rate: 0.86 },
-      'CA': { symbol: 'CA$', rate: 1.43 },
-      'US': { symbol: '$', rate: 1.08 },
-      'AU': { symbol: 'A$', rate: 1.62 },
+// ═══ MODAL ═══
+(function(){
+  var overlay = document.getElementById('intake-overlay');
+
+  function openIntake(e) {
+    if (e) e.preventDefault();
+    resetModal();
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeIntake() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function resetModal() {
+    document.querySelectorAll('.intake-step').forEach(function(s){ s.style.display=''; s.classList.remove('active'); });
+    document.getElementById('step1').classList.add('active');
+    document.getElementById('intake-success').style.display = 'none';
+    updateDots(1);
+  }
+
+  function updateDots(n) {
+    document.querySelectorAll('.intake-dot').forEach(function(d,i){ d.classList.toggle('active', i+1===n); });
+  }
+
+  document.getElementById('intake-close').addEventListener('click', closeIntake);
+  overlay.addEventListener('click', function(e){ if (e.target===overlay) closeIntake(); });
+  document.addEventListener('keydown', function(e){ if (e.key==='Escape') closeIntake(); });
+
+  // Intercept ALL Stripe links — EXCEPT ones inside the success screen
+  document.addEventListener('click', function(e){
+    var a = e.target.closest('a[href*="buy.stripe.com"]');
+    if (a && !document.getElementById('intake-success').contains(a)) {
+      openIntake(e);
+    }
+  }, true);
+
+  window.intakeNext = function(from) {
+    if (from === 1) {
+      var gym   = document.getElementById('f-gym').value.trim();
+      var name  = document.getElementById('f-name').value.trim();
+      var email = document.getElementById('f-email').value.trim();
+      if (!gym || !name || !email) { alert('Please fill in gym name, your name and email.'); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address.'); return; }
+      document.getElementById('step1').classList.remove('active');
+      document.getElementById('step2').classList.add('active');
+      updateDots(2);
+    } else if (from === 2) {
+      var members = document.getElementById('f-members').value.trim();
+      var country = document.getElementById('f-country').value;
+      var stripe  = document.getElementById('f-stripe').value.trim();
+      if (!members || !country || !stripe) { alert('Please fill in all required fields.'); return; }
+      if (stripe && !stripe.startsWith('acct_')) {
+        if (!confirm('Stripe Account IDs usually start with "acct_". Continue anyway?')) return;
+      }
+      buildReview();
+      document.getElementById('step2').classList.remove('active');
+      document.getElementById('step3').classList.add('active');
+      updateDots(3);
+    }
+  };
+
+  window.intakeBack = function(from) {
+    document.getElementById('step'+from).classList.remove('active');
+    document.getElementById('step'+(from-1)).classList.add('active');
+    updateDots(from-1);
+  };
+
+  function buildReview() {
+    var d = getData();
+    var rows = [
+      ['Gym', d.gym], ['Owner', d.name+' '+d.surname],
+      ['Email', d.email], ['Phone', d.phone||'—'],
+      ['Members', d.members], ['Country', d.country],
+      ['Stripe ID', d.stripe||'—'], ['Software', d.software||'—']
+    ];
+    document.getElementById('reviewBlock').innerHTML = rows.map(function(r){
+      return '<div class="review-row"><span class="review-key">'+r[0]+'</span><span class="review-val">'+(r[1]||'—')+'</span></div>';
+    }).join('');
+  }
+
+  function getData() {
+    return {
+      gym:      document.getElementById('f-gym').value.trim(),
+      name:     document.getElementById('f-name').value.trim(),
+      surname:  document.getElementById('f-surname').value.trim(),
+      email:    document.getElementById('f-email').value.trim(),
+      phone:    document.getElementById('f-phone').value.trim(),
+      members:  document.getElementById('f-members').value.trim(),
+      country:  document.getElementById('f-country').value,
+      stripe:   document.getElementById('f-stripe').value.trim(),
+      software: document.getElementById('f-software').value
     };
-    if (map[data.country_code]) {
-      currency = map[data.country_code];
-      document.querySelectorAll('[data-currency]').forEach(el => {
-        el.dataset.currency = currency.symbol;
-      });
-      updateCalc();
-    }
-  } catch(e) {}
-}
+  }
 
-function fmt(eur) {
-  const val = Math.round(eur * currency.rate);
-  return `${currency.symbol}${val.toLocaleString()}`;
-}
-
-function updateCalc() {
-  const members = parseInt(document.getElementById('slMembers').value);
-  const fee = parseInt(document.getElementById('slFee').value);
-  const rate = parseFloat(document.getElementById('slRate').value) / 100;
-
-  document.getElementById('valMembers').textContent = members.toLocaleString();
-  document.getElementById('valFee').textContent = `${currency.symbol}${fee}`;
-  document.getElementById('valRate').textContent = `${(rate*100).toFixed(1)}%`;
-
-  const lost = members * fee * rate;
-  const recovered = lost * 0.78;
-  const cost = 99;
-  const gain = recovered - cost;
-
-  document.getElementById('rLost').textContent = fmt(lost);
-  document.getElementById('rRecovered').textContent = fmt(recovered);
-  document.getElementById('rCost').textContent = fmt(cost);
-  document.getElementById('rGain').textContent = gain > 0 ? fmt(gain) : `${currency.symbol}0`;
-}
-
-['slMembers', 'slFee', 'slRate'].forEach(id => {
-  document.getElementById(id).addEventListener('input', updateCalc);
-});
-
-updateCalc();
-detectCurrency();
-
-// ─── PRICING TOGGLE ───
-let isAnnual = false;
-const toggle = document.getElementById('pricingToggle');
-const priceDisplay = document.getElementById('priceDisplay');
-const priceNote = document.getElementById('priceNote');
-const labelMonthly = document.getElementById('labelMonthly');
-const labelAnnual = document.getElementById('labelAnnual');
-const saveBadge = document.getElementById('saveBadge');
- 
-const pricingCta = document.getElementById('pricingCta');
-
-const MONTHLY_LINK = "https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00";
-const ANNUAL_LINK = "https://buy.stripe.com/7sY14o1lIbzZdwSfoteAg01";
-
-toggle.addEventListener('click', () => {
-  isAnnual = !isAnnual;
-  toggle.classList.toggle('annual', isAnnual);
-  labelMonthly.classList.toggle('active', !isAnnual);
-  labelAnnual.classList.toggle('active', isAnnual);
-  saveBadge.style.display = isAnnual ? 'inline' : 'none';
-
-if (isAnnual) {
-
-    priceDisplay.textContent = `${currency.symbol}${Math.round(82 * currency.rate)}/month`;
-    priceNote.textContent =
-        `Billed annually (${currency.symbol}${Math.round(990 * currency.rate)}/year). Cancel anytime.`;
-
-    pricingCta.href = ANNUAL_LINK;
-    pricingCta.textContent = "Start annual plan →";
-
-} else {
-
-    priceDisplay.textContent = `${currency.symbol}${Math.round(99 * currency.rate)}/month`;
-    priceNote.textContent = "Cancel anytime.";
-
-    pricingCta.href = MONTHLY_LINK;
-    pricingCta.textContent = "Start your free 30 days →";
-
-}
-});
-
-// ─── SCROLL REVEAL ───
-const reveals = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      observer.unobserve(e.target);
+  window.intakeSubmit = function() {
+    var btn = document.getElementById('submitBtn');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+    var d = getData();
+    // store locally as backup
+    try {
+      var leads = JSON.parse(localStorage.getItem('gymos_leads')||'[]');
+      leads.push(Object.assign({}, d, { ts: new Date().toISOString() }));
+      localStorage.setItem('gymos_leads', JSON.stringify(leads));
+    } catch(e){}
+    // show success after brief delay
+    setTimeout(function(){
+      document.querySelectorAll('.intake-step').forEach(function(s){ s.style.display='none'; });
+      document.getElementById('intake-success').style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Start free trial →';
+    }, 700);
+  };
+})();
+// ═══ THEME TOGGLE ═══
+(function(){
+  var html = document.documentElement;
+  var btn  = document.getElementById('theme-toggle');
+  // on load: check saved preference, then system preference
+  var saved = localStorage.getItem('gymos_theme');
+  if (saved === 'dark') {
+    html.setAttribute('data-theme', 'dark');
+  } else if (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    html.setAttribute('data-theme', 'dark');
+  }
+  btn.addEventListener('click', function(){
+    var isDark = html.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      html.removeAttribute('data-theme');
+      localStorage.setItem('gymos_theme', 'light');
+    } else {
+      html.setAttribute('data-theme', 'dark');
+      localStorage.setItem('gymos_theme', 'dark');
     }
   });
-}, { threshold: 0.12 });
-
-reveals.forEach(el => observer.observe(el));
+})();
 </script>
 </body>
 </html>
