@@ -1411,6 +1411,11 @@ const priceNote = document.getElementById('priceNote');
 const labelMonthly = document.getElementById('labelMonthly');
 const labelAnnual = document.getElementById('labelAnnual');
 const saveBadge = document.getElementById('saveBadge');
+ 
+const pricingCta = document.getElementById('pricingCta');
+
+const MONTHLY_LINK = "https://buy.stripe.com/4gM4gA2pMeMbakGccheAg00";
+const ANNUAL_LINK = "https://buy.stripe.com/7sY14o1lIbzZdwSfoteAg01";
 
 toggle.addEventListener('click', () => {
   isAnnual = !isAnnual;
@@ -1419,13 +1424,24 @@ toggle.addEventListener('click', () => {
   labelAnnual.classList.toggle('active', isAnnual);
   saveBadge.style.display = isAnnual ? 'inline' : 'none';
 
-  if (isAnnual) {
+if (isAnnual) {
+
     priceDisplay.textContent = `${currency.symbol}${Math.round(82 * currency.rate)}/month`;
-    priceNote.textContent = `Billed annually (${currency.symbol}${Math.round(990 * currency.rate)}/year). Cancel anytime.`;
-  } else {
+    priceNote.textContent =
+        `Billed annually (${currency.symbol}${Math.round(990 * currency.rate)}/year). Cancel anytime.`;
+
+    pricingCta.href = ANNUAL_LINK;
+    pricingCta.textContent = "Start annual plan →";
+
+} else {
+
     priceDisplay.textContent = `${currency.symbol}${Math.round(99 * currency.rate)}/month`;
-    priceNote.textContent = 'Cancel anytime.';
-  }
+    priceNote.textContent = "Cancel anytime.";
+
+    pricingCta.href = MONTHLY_LINK;
+    pricingCta.textContent = "Start your free 30 days →";
+
+}
 });
 
 // ─── SCROLL REVEAL ───
